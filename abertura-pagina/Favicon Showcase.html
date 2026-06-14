@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identidade Visual — Apolo &amp; Frajola</title>
+  <link rel="icon" href="favicon-apolo.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:     #090909;
+      --border: rgba(255,255,255,0.07);
+      --text:   #f0ede8;
+      --muted:  #444;
+      --mono:   'Courier New', Courier, monospace;
+    }
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .page { max-width: 920px; margin: 0 auto; padding: 72px 48px 100px; }
+
+    .hd {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 18px; margin-bottom: 64px;
+    }
+    .hd small {
+      display: block; font-family: var(--mono); font-size: 9.5px;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 7px;
+    }
+    .hd h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.4px; }
+    .hd .yr { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+    /* ── HERO 2 CATS SIDE BY SIDE ── */
+    .heroes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      margin-bottom: 1px;
+    }
+    .hero-card {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 48px 32px 36px;
+      gap: 16px;
+      position: relative;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--border) 1px, transparent 1px),
+        linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 16px 16px;
+      pointer-events: none;
+    }
+    .hero-icon {
+      position: relative;
+      z-index: 1;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .cat-name {
+      position: relative; z-index: 1;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+    .cat-sub {
+      position: relative; z-index: 1;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--muted);
+      letter-spacing: 0.1em;
+      text-align: center;
+    }
+
+    /* ── DETAIL GRID ── */
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-top: none;
+    }
+    .card { background: var(--bg); padding: 24px 24px 28px; }
+    .card h2 {
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 20px;
+    }
+
+    /* SIZES */
+    .sizes { display: flex; flex-direction: column; gap: 16px; }
+    .sz { display: flex; align-items: center; gap: 12px; }
+    .sz img {
+      flex-shrink: 0;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+    .sz-info { font-family: var(--mono); font-size: 10px; }
+    .sz-info .px  { display: block; color: var(--text); font-size: 11px; margin-bottom: 1px; }
+    .sz-info .lbl { color: var(--muted); }
+
+    /* PALETTES */
+    .palettes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .pal-col { display: flex; flex-direction: column; gap: 8px; }
+    .pal-label {
+      font-family: var(--mono); font-size: 8px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .sw { display: flex; align-items: center; gap: 8px; }
+    .sw-dot { width: 14px; height: 14px; border-radius: 2px; flex-shrink: 0; }
+    .sw-text { font-family: var(--mono); font-size: 9px; display: flex; gap: 5px; }
+    .sw-text .hex { color: var(--text); }
+    .sw-text .nm  { color: var(--muted); }
+
+    /* CONTEXT */
+    .ctx-tab-bar {
+      background: #141414; border-radius: 5px 5px 0 0;
+      padding: 5px 5px 0; display: flex; gap: 2px;
+    }
+    .ctx-tab {
+      background: #1d1d1f; border-radius: 5px 5px 0 0;
+      padding: 0 10px; display: flex; align-items: center; gap: 5px; height: 28px;
+    }
+    .ctx-tab img {
+      width: 12px; height: 12px; flex-shrink: 0;
+      image-rendering: pixelated;
+    }
+    .ctx-tab span {
+      font-size: 10px; color: rgba(240,237,232,0.45);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 80px;
+    }
+    .ctx-apps { display: flex; gap: 12px; margin-top: 20px; align-items: flex-end; }
+    .ctx-app { border-radius: 12px; overflow: hidden; flex-shrink: 0; }
+    .ctx-app img { display: block; image-rendering: pixelated; }
+    .ctx-app-lbl { font-family: var(--mono); font-size: 8px; color: var(--muted); margin-top: 4px; text-align: center; }
+
+    /* WORDMARK */
+    .wm-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-top: none;
+      padding: 24px;
+    }
+    .wm-card h2 {
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 22px;
+    }
+    .wm-rows { display: flex; flex-direction: column; gap: 20px; }
+    .wm-row { display: flex; align-items: center; gap: 12px; }
+    .wm-row img { flex-shrink: 0; image-rendering: pixelated; }
+    .wm-name { font-weight: 600; letter-spacing: -0.5px; color: var(--text); }
+    .wm-name em { font-style: normal; color: var(--muted); }
+    .wm-tag { font-family: var(--mono); font-size: 8.5px; color: var(--muted); margin-left: 8px; }
+
+    /* FOOTER */
+    .ft {
+      margin-top: 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 16px; border-top: 1px solid var(--border);
+    }
+    .ft span { font-family: var(--mono); font-size: 9px; color: var(--muted); }
+
+    /* DOWNLOADS */
+    .downloads {
+      border: 1px solid var(--border);
+      border-top: none;
+      background: var(--bg);
+      padding: 24px 28px 28px;
+      margin-bottom: 1px;
+    }
+    .downloads h2 {
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 20px;
+    }
+    .dl-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .dl-group { display: flex; flex-direction: column; gap: 10px; }
+    .dl-group h3 {
+      font-size: 14px; font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+    .dl-group p {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--muted); margin-top: -4px;
+    }
+    .dl-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .dl-row-label {
+      font-family: var(--mono); font-size: 8px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-top: 10px;
+    }
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.04em;
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text);
+      text-decoration: none;
+      background: transparent;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .dl-btn:hover {
+      border-color: rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+    }
+    .dl-btn svg { flex-shrink: 0; opacity: 0.55; }
+    .dl-all {
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+    }
+    .dl-all span {
+      font-family: var(--mono); font-size: 9px;
+      color: var(--muted); margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hd">
+    <div>
+      <small>identidade visual · portfólio</small>
+      <h1>Favicon — Apolo &amp; Frajola</h1>
+    </div>
+    <span class="yr">2025</span>
+  </header>
+
+  <!-- ── HERO: dois gatinhos lado a lado ── -->
+  <div class="heroes">
+
+    <div class="hero-card">
+      <img class="hero-icon" src="favicon-apolo.svg"
+           width="192" height="192" alt="Apolo">
+      <span class="cat-name">Apolo</span>
+      <span class="cat-sub">ragdoll · creme + pontas chocolate · olhos azuis</span>
+    </div>
+
+    <div class="hero-card">
+      <img class="hero-icon" src="favicon-frajola.svg"
+           width="192" height="192" alt="Frajola">
+      <span class="cat-name">Frajola</span>
+      <span class="cat-sub">tabby · listras cinza-marrom · olhos âmbar</span>
+    </div>
+
+  </div>
+
+  <!-- ── DOWNLOAD ── -->
+  <section class="downloads">
+    <h2>Download</h2>
+    <div class="dl-grid">
+
+      <div class="dl-group">
+        <h3>Apolo</h3>
+        <p>ragdoll · coleira vermelha · medalha dourada</p>
+        <div class="dl-btns">
+          <a class="dl-btn" href="favicon-apolo.svg" download="favicon-apolo.svg">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            SVG 64×64
+          </a>
+          <a class="dl-btn" href="favicon-apolo-32.svg" download="favicon-apolo-32.svg">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Master 32×32
+          </a>
+        </div>
+        <span class="dl-row-label">PNG (pixel nítido · do master 32×32)</span>
+        <div class="dl-btns">
+          <a class="dl-btn" href="favicon-apolo-16.png" download="favicon-apolo-16.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            16×16
+          </a>
+          <a class="dl-btn" href="favicon-apolo-32.png" download="favicon-apolo-32.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            32×32
+          </a>
+          <a class="dl-btn" href="favicon-apolo-64.png" download="favicon-apolo-64.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            64×64
+          </a>
+          <a class="dl-btn" href="favicon-apolo-120.png" download="favicon-apolo-120.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            120×120
+          </a>
+        </div>
+      </div>
+
+      <div class="dl-group">
+        <h3>Frajola</h3>
+        <p>tabby · coleira azul · medalha dourada</p>
+        <div class="dl-btns">
+          <a class="dl-btn" href="favicon-frajola.svg" download="favicon-frajola.svg">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            SVG 64×64
+          </a>
+          <a class="dl-btn" href="favicon-frajola-32.svg" download="favicon-frajola-32.svg">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Master 32×32
+          </a>
+        </div>
+        <span class="dl-row-label">PNG (pixel nítido · do master 32×32)</span>
+        <div class="dl-btns">
+          <a class="dl-btn" href="favicon-frajola-16.png" download="favicon-frajola-16.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            16×16
+          </a>
+          <a class="dl-btn" href="favicon-frajola-32.png" download="favicon-frajola-32.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            32×32
+          </a>
+          <a class="dl-btn" href="favicon-frajola-64.png" download="favicon-frajola-64.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            64×64
+          </a>
+          <a class="dl-btn" href="favicon-frajola-120.png" download="favicon-frajola-120.png">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            120×120
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div class="dl-all">
+      <span>Geral</span>
+      <a class="dl-btn" href="favicon.svg" download="favicon.svg">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        favicon.svg
+      </a>
+      <a class="dl-btn" href="favicon-16.png" download="favicon-16.png">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        favicon-16.png
+      </a>
+      <a class="dl-btn" href="favicon-32.png" download="favicon-32.png">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        favicon-32.png
+      </a>
+      <a class="dl-btn" href="favicon-64.png" download="favicon-64.png">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        favicon-64.png
+      </a>
+      <a class="dl-btn" href="favicon-120.png" download="favicon-120.png">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M6 1v7M3 6l3 3 3-3M2 10h8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        favicon-120.png
+      </a>
+    </div>
+  </section>
+
+  <!-- ── DETAIL GRID ── -->
+  <div class="grid">
+
+    <!-- SIZES -->
+    <div class="card">
+      <h2>Tamanhos</h2>
+      <div class="sizes">
+        <div class="sz">
+          <img src="favicon-apolo.svg" width="16" height="16" alt="">
+          <img src="favicon-frajola.svg" width="16" height="16" alt="" style="margin-left:4px">
+          <div class="sz-info"><span class="px">16 × 16</span><span class="lbl">browser tab</span></div>
+        </div>
+        <div class="sz">
+          <img src="favicon-apolo.svg" width="32" height="32" alt="">
+          <img src="favicon-frajola.svg" width="32" height="32" alt="" style="margin-left:4px">
+          <div class="sz-info"><span class="px">32 × 32</span><span class="lbl">retina favicon</span></div>
+        </div>
+        <div class="sz">
+          <img src="favicon-apolo.svg" width="64" height="64" alt="">
+          <img src="favicon-frajola.svg" width="64" height="64" alt="" style="margin-left:4px">
+          <div class="sz-info"><span class="px">64 × 64</span><span class="lbl">touch icon</span></div>
+        </div>
+        <div class="sz">
+          <img src="favicon-apolo.svg" width="96" height="96" alt="">
+          <img src="favicon-frajola.svg" width="96" height="96" alt="" style="margin-left:4px">
+          <div class="sz-info"><span class="px">96 × 96</span><span class="lbl">app icon</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PALETTES -->
+    <div class="card">
+      <h2>Paletas</h2>
+      <div class="palettes">
+        <div class="pal-col">
+          <div class="pal-label">Apolo</div>
+          <div class="sw"><div class="sw-dot" style="background:#e8dccc"></div><div class="sw-text"><span class="hex">#e8dccc</span><span class="nm">pelo</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#2c1810"></div><div class="sw-text"><span class="hex">#2c1810</span><span class="nm">orelhas</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#88bfee"></div><div class="sw-text"><span class="hex">#88bfee</span><span class="nm">olhos</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#8a6850"></div><div class="sw-text"><span class="hex">#8a6850</span><span class="nm">focinho</span></div></div>
+        </div>
+        <div class="pal-col">
+          <div class="pal-label">Frajola</div>
+          <div class="sw"><div class="sw-dot" style="background:#c8b888"></div><div class="sw-text"><span class="hex">#c8b888</span><span class="nm">pelo</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#6a5838"></div><div class="sw-text"><span class="hex">#6a5838</span><span class="nm">listras</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#ddaa22"></div><div class="sw-text"><span class="hex">#ddaa22</span><span class="nm">olhos</span></div></div>
+          <div class="sw"><div class="sw-dot" style="background:#f2ede0"></div><div class="sw-text"><span class="hex">#f2ede0</span><span class="nm">focinho</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTEXT -->
+    <div class="card">
+      <h2>Contextos</h2>
+      <div class="ctx-tab-bar">
+        <div class="ctx-tab">
+          <img src="favicon-apolo.svg" alt="">
+          <span>portfólio · apolo</span>
+        </div>
+        <div class="ctx-tab">
+          <img src="favicon-frajola.svg" alt="">
+          <span>portfólio · frajola</span>
+        </div>
+      </div>
+      <div class="ctx-apps">
+        <div>
+          <div class="ctx-app" style="width:52px;height:52px">
+            <img src="favicon-apolo.svg" width="52" height="52" alt="">
+          </div>
+          <div class="ctx-app-lbl">apolo</div>
+        </div>
+        <div>
+          <div class="ctx-app" style="width:52px;height:52px">
+            <img src="favicon-frajola.svg" width="52" height="52" alt="">
+          </div>
+          <div class="ctx-app-lbl">frajola</div>
+        </div>
+        <div>
+          <div class="ctx-app" style="width:36px;height:36px">
+            <img src="favicon-apolo.svg" width="36" height="36" alt="">
+          </div>
+          <div class="ctx-app-lbl">36px</div>
+        </div>
+        <div>
+          <div class="ctx-app" style="width:36px;height:36px">
+            <img src="favicon-frajola.svg" width="36" height="36" alt="">
+          </div>
+          <div class="ctx-app-lbl">36px</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── WORDMARK ── -->
+  <div class="wm-card">
+    <h2>Logotipo + Nome</h2>
+    <div class="wm-rows">
+      <div class="wm-row">
+        <img src="favicon-apolo.svg" width="40" height="40" alt="">
+        <span class="wm-name" style="font-size:24px">[seu nome]<em>.dev</em></span>
+        <span class="wm-tag">apolo</span>
+      </div>
+      <div class="wm-row">
+        <img src="favicon-frajola.svg" width="40" height="40" alt="">
+        <span class="wm-name" style="font-size:24px">[seu nome]<em>.dev</em></span>
+        <span class="wm-tag">frajola</span>
+      </div>
+      <div class="wm-row">
+        <img src="favicon-apolo.svg" width="22" height="22" alt="">
+        <span class="wm-name" style="font-size:13px">[seu nome]<em>.dev</em></span>
+        <img src="favicon-frajola.svg" width="22" height="22" alt="" style="margin-left:20px">
+        <span class="wm-name" style="font-size:13px">[seu nome]<em>.dev</em></span>
+        <span class="wm-tag">compacto</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ft">
+    <span>portfólio · identidade visual · apolo &amp; frajola</span>
+    <span>favicon-apolo.svg · favicon-frajola.svg · pixel art 64×64 (master 32×32)</span>
+  </footer>
+
+</div>
+</body>
+</html>

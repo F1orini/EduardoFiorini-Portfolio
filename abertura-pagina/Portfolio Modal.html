@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Projetos</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #090909;
+      --surface: #111214;
+      --border: rgba(255,255,255,0.075);
+      --text: #f0ede8;
+      --muted: #555;
+      --dim: rgba(240,237,232,0.55);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── LIST PAGE ─────────────────────────────────────────── */
+    .page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 80px 52px 120px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      margin-bottom: 38px;
+    }
+
+    .section-head h1 {
+      font-size: 28px;
+      font-weight: 600;
+      letter-spacing: -0.4px;
+    }
+
+    .section-head .n {
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .divider { border: none; border-top: 1px solid var(--border); }
+
+    .proj-list { list-style: none; }
+
+    .proj-item {
+      display: grid;
+      grid-template-columns: 18px 1fr auto;
+      align-items: center;
+      gap: 18px;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: padding-left 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      user-select: none;
+    }
+
+    .proj-item:hover { padding-left: 8px; }
+
+    .proj-item .arr {
+      font-size: 13px;
+      color: #3a3a3a;
+      transition: color 0.2s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      line-height: 1;
+    }
+
+    .proj-item:hover .arr {
+      color: var(--text);
+      transform: translateX(4px);
+    }
+
+    .proj-item .name {
+      font-size: 20px;
+      font-weight: 500;
+      letter-spacing: -0.3px;
+    }
+
+    .proj-item .tag {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ─── OVERLAY ────────────────────────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(6, 6, 6, 0.88);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .overlay.active { display: flex; }
+
+    /* ─── MODAL ──────────────────────────────────────────────── */
+    .modal {
+      width: calc(100vw - 80px);
+      max-width: 1260px;
+      height: calc(100vh - 80px);
+      max-height: 880px;
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      will-change: clip-path, transform, opacity;
+      position: relative;
+    }
+
+    /* subtle page-lift sheen during open */
+    .modal::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,0.04) 0%,
+        rgba(255,255,255,0.0) 30%);
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      border-radius: inherit;
+      transition: opacity 0.5s ease;
+    }
+
+    .modal.sheen::before { opacity: 1; }
+
+    /* HEADER */
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 17px 28px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .esc {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09);
+      color: #666;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .esc:hover { background: rgba(255,255,255,0.1); color: #ccc; }
+
+    .modal-hname {
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: -0.1px;
+    }
+
+    .vsep {
+      width: 1px;
+      height: 14px;
+      background: rgba(255,255,255,0.12);
+    }
+
+    .modal-hcat {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* BODY */
+    .modal-body {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .col-left {
+      padding: 50px 52px;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      scrollbar-width: thin;
+      scrollbar-color: #2a2a2a transparent;
+    }
+
+    .col-left::-webkit-scrollbar { width: 4px; }
+    .col-left::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 2px; }
+
+    .col-right {
+      padding: 50px 48px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .big-title {
+      font-size: 42px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1.05;
+      margin-bottom: 22px;
+    }
+
+    .desc {
+      font-size: 13.5px;
+      line-height: 1.85;
+      color: var(--dim);
+      margin-bottom: 36px;
+      text-wrap: pretty;
+    }
+
+    .hr-thin {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+
+    .flow-label {
+      font-size: 10px;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+
+    .step {
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--dim);
+      margin-bottom: 16px;
+      text-wrap: pretty;
+    }
+
+    .step strong { color: var(--text); font-weight: 500; }
+
+    /* ─── MOCKUP ─────────────────────────────────────────────── */
+    .mockup {
+      width: 100%;
+      background: #161820;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.07);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .mock-bar {
+      background: #12141a;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      padding: 9px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .mock-dots { display: flex; gap: 6px; }
+    .mock-dot { width: 10px; height: 10px; border-radius: 50%; }
+    .mock-dot.r { background: #ff5f57; }
+    .mock-dot.y { background: #ffbd2e; }
+    .mock-dot.g { background: #28c840; }
+
+    .mock-label {
+      font-size: 9.5px;
+      color: #3a3a3a;
+      letter-spacing: 0.06em;
+    }
+
+    .mock-body { padding: 14px 14px 16px; }
+
+    .mock-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-bottom: 8px;
+    }
+
+    .mock-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 5px;
+      padding: 9px 11px 10px;
+    }
+
+    .mock-card-title {
+      font-size: 8.5px;
+      color: #444;
+      letter-spacing: 0.08em;
+      margin-bottom: 9px;
+    }
+
+    .mock-card-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2d6fc4;
+    }
+
+    .mock-chart {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 5px;
+      padding: 10px 10px 0;
+      margin-bottom: 8px;
+      overflow: hidden;
+    }
+
+    .mock-bars { display: flex; flex-direction: column; gap: 5px; }
+
+    .mock-bar-row {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mock-bar-name {
+      font-size: 7.5px;
+      color: #3e3e3e;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .mock-bar-track {
+      height: 3px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .mock-bar-fill {
+      height: 100%;
+      background: #2d6fc4;
+      border-radius: 2px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── PROJECT LIST ──────────────────────────── -->
+  <main class="page">
+    <div class="section-head">
+      <h1>Projetos</h1>
+      <span class="n">5</span>
+    </div>
+    <hr class="divider">
+    <ul class="proj-list" id="projList"></ul>
+  </main>
+
+  <!-- ── MODAL OVERLAY ────────────────────────── -->
+  <div class="overlay" id="overlay">
+    <div class="modal" id="modal">
+      <div class="modal-header">
+        <button class="esc" id="closeBtn">ESC</button>
+        <span class="modal-hname" id="mName"></span>
+        <span class="vsep"></span>
+        <span class="modal-hcat" id="mCat"></span>
+      </div>
+      <div class="modal-body">
+
+        <div class="col-left" id="colLeft"></div>
+
+        <div class="col-right">
+          <div class="mockup">
+            <div class="mock-bar">
+              <div class="mock-dots">
+                <div class="mock-dot r"></div>
+                <div class="mock-dot y"></div>
+                <div class="mock-dot g"></div>
+              </div>
+              <span class="mock-label" id="mMockLabel"></span>
+              <span style="width:40px"></span>
+            </div>
+            <div class="mock-body" id="mMockBody"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ─── DATA ──────────────────────────────────────────────── */
+    const projects = [
+      {
+        id: 'taxresearch',
+        name: 'TaxResearch Technologies',
+        category: 'CRM COMERCIAL',
+        status: 'Em Produção',
+        desc: 'Minha atuação na TaxResearch do Brasil se estabelece como elo tecnológico para a entrega dos melhores resultados nos serviços prestados. No suporte interno, atendo equipamentos, contas de e-mail da equipe, permissões de acesso e ajustes pontuais em sistemas — em geral resolvido por acesso remoto. Paralelamente, atuo no desenvolvimento de novas soluções tecnológicas; observo a operação, mantenho contato direto com colaboradores dos setores para entender demanda real e desenvolver ferramentas e sistemas completos, sob medida.',
+        flowLabel: 'FLUXO',
+        steps: [
+          { t: 'Demanda chega, eu diagnostico', d: 'Suporte pontual, liberação de acesso ou pedido de nova ferramenta — entendo o contexto, quem usa e o que não pode quebrar.' },
+          { t: 'Remoto quando dá, presencial quando precisa', d: 'E-mail, permissões e adequações de sistema via acesso remoto; hardware e casos críticos entram na fila com prioridade clara.' },
+          { t: 'Levantamento com quem opera', d: 'Converso com os setores envolvidos, observo o fluxo atual e fecho o escopo do que precisa existir de fato.' },
+          { t: 'Desenvolvimento e entrega', d: 'Construo a solução sob medida, valido com quem pediu e deixo rodando — CRM comercial, automações e painéis internos.' },
+        ],
+        mockLabel: 'TaxResearch Technologies',
+        mockCards: ['SUPORTE REMOTO', 'E-MAIL & ACESSOS', 'SISTEMAS SOB MEDIDA', 'CONTATO COM SETORES'],
+        mockBars: [{ l: 'Suporte remoto', w: 86 }, { l: 'E-mail & acess.', w: 70 }, { l: 'Sistemas sob m.', w: 62 }, { l: 'Contato setores', w: 45 }],
+      },
+      {
+        id: 'previnity',
+        name: 'Previnity Soluções Inteligentes',
+        category: 'AUTOMAÇÃO',
+        status: 'Em Produção',
+        desc: 'Desenvolvimento de plataforma de análise e automação para a Previnity, integrando dados de múltiplas fontes para gerar insights operacionais em tempo real. A solução conecta APIs externas, processa pipelines e entrega dashboards customizados por área, eliminando exportações manuais e reduzindo tempo de geração de relatórios de horas para minutos.',
+        flowLabel: 'FLUXO',
+        steps: [
+          { t: 'Mapeamento de fontes', d: 'Identificação de todos os sistemas que produzem dados — ERPs, planilhas, APIs externas e registros internos.' },
+          { t: 'Pipeline de integração', d: 'Pipelines robustos que normalizam e consolidam dados em tempo real, sem depender de exportações manuais.' },
+          { t: 'Dashboards por setor', d: 'Cada área recebe sua visão customizada — comercial, operacional, financeiro — com indicadores que fazem sentido para quem opera.' },
+        ],
+        mockLabel: 'Previnity Platform',
+        mockCards: ['INGESTÃO', 'TRANSFORMAÇÃO', 'DASHBOARDS', 'ALERTAS'],
+        mockBars: [{ l: 'Dados ingeridos', w: 92 }, { l: 'Transformações', w: 78 }, { l: 'Relatórios auto.', w: 88 }, { l: 'Alertas ativos', w: 54 }],
+      },
+      {
+        id: 'aplicari',
+        name: 'Desenvolvimento Web Aplicari',
+        category: 'PLATAFORMA WEB',
+        status: 'Em Produção',
+        desc: 'Concepção e desenvolvimento completo da plataforma web da Aplicari, desde arquitetura de sistema até interface final. O projeto envolveu design de produto, desenvolvimento front-end e back-end, integração com APIs de pagamento e entrega em produção — do zero ao lançamento.',
+        flowLabel: 'STACK',
+        steps: [
+          { t: 'Arquitetura e tecnologia', d: 'Definição do stack, modelagem de banco e arquitetura de API antes da primeira linha de produto.' },
+          { t: 'Design e prototipagem', d: 'Wireframes, fluxos e protótipos de alta fidelidade validados com stakeholders antes do desenvolvimento.' },
+          { t: 'Desenvolvimento e deploy', d: 'Implementação iterativa com entregas semanais, CI/CD e monitoramento de performance em produção.' },
+        ],
+        mockLabel: 'Aplicari Web',
+        mockCards: ['FRONT-END', 'BACK-END', 'PAGAMENTOS', 'DEPLOY'],
+        mockBars: [{ l: 'Performance', w: 94 }, { l: 'Uptime', w: 99 }, { l: 'Cobertura API', w: 82 }, { l: 'Testes', w: 71 }],
+      },
+      {
+        id: 'pipeline',
+        name: 'Pipeline de dados',
+        category: 'DADOS',
+        status: '2024',
+        desc: 'Construção de pipeline de ingestão, transformação e visualização de dados para análise operacional. O projeto automatizou processos manuais de consolidação de relatórios, reduzindo de horas para minutos o tempo necessário para gerar indicadores estratégicos e alimentar decisões de gestão.',
+        flowLabel: 'ETAPAS',
+        steps: [
+          { t: 'Ingestão', d: 'Coleta automatizada de dados de múltiplas fontes heterogêneas com tratamento de erros e retry logic.' },
+          { t: 'Transformação', d: 'Normalização, enriquecimento e agregação conforme regras de negócio definidas com as áreas.' },
+          { t: 'Visualização', d: 'Dashboards interativos com atualização automática e alertas configuráveis por threshold.' },
+        ],
+        mockLabel: 'Data Pipeline',
+        mockCards: ['INGESTÃO', 'LIMPEZA', 'AGREGAÇÃO', 'OUTPUT'],
+        mockBars: [{ l: 'Fontes ativas', w: 80 }, { l: 'Tx. sucesso', w: 97 }, { l: 'Latência', w: 60 }, { l: 'Throughput', w: 74 }],
+      },
+      {
+        id: 'infra',
+        name: 'Infraestrutura SP',
+        category: 'INFRAESTRUTURA',
+        status: '2024',
+        desc: 'Reestruturação completa da infraestrutura de TI para a operação em São Paulo. O projeto abrangeu migração de serviços locais para nuvem, implementação de políticas de segurança, setup de monitoramento e documentação completa do ambiente — com janelas de manutenção minimizadas.',
+        flowLabel: 'ESCOPO',
+        steps: [
+          { t: 'Diagnóstico do ambiente', d: 'Levantamento completo da infraestrutura, identificando gargalos, riscos e oportunidades de melhoria.' },
+          { t: 'Migração para nuvem', d: 'Migração planejada e progressiva dos serviços críticos, com janelas de manutenção mínimas e rollback documentado.' },
+          { t: 'Segurança e monitoramento', d: 'Políticas de acesso, backup automatizado, alertas de disponibilidade e documentação operacional completa.' },
+        ],
+        mockLabel: 'Infra SP',
+        mockCards: ['SERVIDORES', 'REDE', 'SEGURANÇA', 'MONITORAMENTO'],
+        mockBars: [{ l: 'Disponibilidade', w: 99 }, { l: 'Seg. incidentes', w: 88 }, { l: 'Backup status', w: 100 }, { l: 'Latência rede', w: 72 }],
+      },
+    ];
+
+    /* ─── RENDER LIST ───────────────────────────────────────── */
+    const list = document.getElementById('projList');
+    projects.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'proj-item';
+      li.innerHTML = `
+        <span class="arr">→</span>
+        <span class="name">${p.name}</span>
+        <span class="tag">${p.status}</span>`;
+      li.addEventListener('click', () => openModal(li, p));
+      list.appendChild(li);
+    });
+
+    /* ─── ANIMATION STATE ───────────────────────────────────── */
+    const overlay  = document.getElementById('overlay');
+    const modal    = document.getElementById('modal');
+    const closeBtn = document.getElementById('closeBtn');
+
+    let activeAnim  = null;
+    let isOpen      = false;
+    let savedOrigin = { topPct: 50, bottomPct: 50 };
+
+    /* ─── OPEN ──────────────────────────────────────────────── */
+    function openModal(itemEl, project) {
+      if (isOpen) return;
+
+      /* populate content */
+      document.getElementById('mName').textContent    = project.name;
+      document.getElementById('mCat').textContent     = project.category;
+      document.getElementById('mMockLabel').textContent = project.mockLabel;
+
+      document.getElementById('colLeft').innerHTML = `
+        <h2 class="big-title">${project.name}</h2>
+        <p class="desc">${project.desc}</p>
+        <hr class="hr-thin">
+        <div class="flow-label">${project.flowLabel}</div>
+        ${project.steps.map(s => `
+          <div class="step"><strong>${s.t}</strong> — ${s.d}</div>`).join('')}`;
+
+      document.getElementById('mMockBody').innerHTML = `
+        <div class="mock-grid">
+          ${project.mockCards.map(c => `
+            <div class="mock-card">
+              <div class="mock-card-title">${c}</div>
+              <div class="mock-card-dot"></div>
+            </div>`).join('')}
+        </div>
+        <div class="mock-chart">
+          <svg width="100%" height="58" viewBox="0 0 300 58" preserveAspectRatio="none">
+            <polyline points="0,42 40,36 80,44 110,26 150,30 180,18 220,22 260,14 300,16"
+              fill="none" stroke="#2d6fc4" stroke-width="1.5" stroke-linejoin="round"/>
+            <polyline points="0,52 40,48 80,50 110,42 150,45 180,38 220,40 260,34 300,36"
+              fill="none" stroke="#1d4a88" stroke-width="1" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div class="mock-bars">
+          ${project.mockBars.map(b => `
+            <div class="mock-bar-row">
+              <span class="mock-bar-name">${b.l}</span>
+              <div class="mock-bar-track"><div class="mock-bar-fill" style="width:${b.w}%"></div></div>
+            </div>`).join('')}
+        </div>`;
+
+      /* show overlay (invisible) so modal has layout */
+      overlay.style.opacity = '0';
+      overlay.classList.add('active');
+
+      /* measure after paint */
+      requestAnimationFrame(() => {
+        const mRect   = modal.getBoundingClientRect();
+        const iRect   = itemEl.getBoundingClientRect();
+        const iCY     = iRect.top + iRect.height / 2;
+        const relY    = ((iCY - mRect.top) / mRect.height) * 100;
+        const clamped = Math.max(4, Math.min(94, relY));
+
+        /* thin slice (≈2%) centred on the clicked row */
+        const tc = clamped - 1;   /* top clip   */
+        const bc = (100 - clamped) - 1; /* bottom clip */
+
+        savedOrigin = { topPct: tc, bottomPct: bc };
+
+        isOpen = true;
+        modal.classList.add('sheen');
+        setTimeout(() => modal.classList.remove('sheen'), 700);
+
+        /* ── overlay fade ── */
+        overlay.animate(
+          [{ opacity: 0 }, { opacity: 1 }],
+          { duration: 380, easing: 'ease-out', fill: 'forwards' }
+        );
+
+        /* ── modal page-unfold ── */
+        if (activeAnim) activeAnim.cancel();
+        activeAnim = modal.animate([
+          {
+            clipPath: `inset(${tc.toFixed(1)}% 5% ${bc.toFixed(1)}% 5%)`,
+            transform: 'perspective(1100px) rotateX(-14deg) scale(0.96)',
+            opacity: 0,
+          },
+          {
+            clipPath: 'inset(0% 0% 0% 0% round 12px)',
+            transform: 'perspective(1100px) rotateX(0deg) scale(1)',
+            opacity: 1,
+          },
+        ], {
+          duration: 680,
+          easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          fill: 'forwards',
+        });
+      });
+    }
+
+    /* ─── CLOSE ─────────────────────────────────────────────── */
+    function closeModal() {
+      if (!isOpen) return;
+      isOpen = false;
+
+      const { topPct: tc, bottomPct: bc } = savedOrigin;
+
+      /* ── overlay fade ── */
+      overlay.animate(
+        [{ opacity: 1 }, { opacity: 0 }],
+        { duration: 320, delay: 80, easing: 'ease-in', fill: 'forwards' }
+      );
+
+      /* ── modal page-fold ── */
+      if (activeAnim) activeAnim.cancel();
+      activeAnim = modal.animate([
+        {
+          clipPath: 'inset(0% 0% 0% 0% round 12px)',
+          transform: 'perspective(1100px) rotateX(0deg) scale(1)',
+          opacity: 1,
+        },
+        {
+          clipPath: `inset(${tc.toFixed(1)}% 5% ${bc.toFixed(1)}% 5%)`,
+          transform: 'perspective(1100px) rotateX(-10deg) scale(0.97)',
+          opacity: 0,
+        },
+      ], {
+        duration: 420,
+        easing: 'cubic-bezier(0.55, 0, 0.75, 0)',
+        fill: 'forwards',
+      });
+
+      activeAnim.addEventListener('finish', () => {
+        overlay.classList.remove('active');
+        overlay.style.opacity = '';
+      });
+    }
+
+    /* ─── LISTENERS ─────────────────────────────────────────── */
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+</body>
+</html>

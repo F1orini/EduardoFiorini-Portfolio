@@ -18,15 +18,20 @@
   ];
 
   const CODE_SNIPPETS = {
-    1: `<span class="cm">// TaxResearch</span>\n<span class="kw">const</span> <span class="fn">sendBatch</span> = (leads) =>\n  whatsapp.<span class="fn">dispatch</span>(leads);\n\n<span class="fn">syncCalendar</span>(<span class="str">'workspace'</span>);`,
-    2: `<span class="cm">// PrevinityHub</span>\n<span class="kw">if</span> (user.role === <span class="str">'ops'</span>)\n  <span class="kw">return</span> docs.<span class="fn">filtered</span>(role);\n\n<span class="fn">onboard</span>(newHire);`,
-    3: `<span class="cm">// Aplicari</span>\n<span class="kw">await</span> <span class="fn">deploy</span>({\n  site: <span class="str">'landing'</span>,\n  dns: <span class="kw">true</span>,\n  ssl: <span class="kw">true</span>\n});`,
-    4: `<span class="cm">// Previnity</span>\nclients.<span class="fn">count</span>() <span class="cm">// 4700+</span>\nhub.<span class="fn">docs</span>(role);\n<span class="fn">patch</span>(prod, hotfix);`,
-    5: `<span class="cm"># pipeline.py</span>\nrows = <span class="fn">load</span>(<span class="str">'1M+'</span>)\n<span class="fn">clean</span>(rows)\n<span class="fn">export_csv</span>(validated)`,
-    6: `<span class="cm"># infra-sp</span>\nvpn.<span class="fn">connect</span>(nas)\nswitch.<span class="fn">configure</span>(vlan)\n<span class="fn">monitor</span>(uptime);`,
+    1: `<span class="cm"># TaxResearch API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities\n<span class="cm"># → suporte, dev, sistemas…</span>`,
+    2: `<span class="cm"># Aplicari API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/SitesELandings\n<span class="cm"># → deploy, e-commerce…</span>`,
+    3: `<span class="cm"># Aplicari API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/SitesELandings\n<span class="cm"># → deploy, monitor…</span>`,
+    4: `<span class="cm"># Previnity API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/PainelDeConsultas\n<span class="cm"># → hub, pipeline, 4700+ clientes</span>`,
+    6: `<span class="cm"># Infra API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/RedeEstruturada\n<span class="cm"># → VPN, NAS, biometria</span>`,
   };
 
   /* ── boot ── */
+  const DEV_KEY = 'ef-dev-mode';
+
+  function isDevMode() {
+    return localStorage.getItem(DEV_KEY) === '1';
+  }
+
   function init() {
     renderHeader();
     renderHero();
@@ -36,9 +41,33 @@
     renderFooter();
     renderPanel();
     renderPreview();
+    renderDevToggle();
     runLoader();
     bindPanel();
     initAnimations();
+  }
+
+  function renderDevToggle() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'dev-toggle' + (isDevMode() ? ' is-on' : '');
+    btn.setAttribute('aria-pressed', String(isDevMode()));
+    btn.setAttribute('aria-label', 'Modo desenvolvimento');
+    btn.innerHTML = `
+      <span class="dev-toggle__label">dev</span>
+      <span class="dev-toggle__track" aria-hidden="true">
+        <span class="dev-toggle__thumb"></span>
+      </span>`;
+    btn.title = isDevMode()
+      ? 'Dev ligado — sem tela de build. Clique para reativar.'
+      : 'Dev desligado — clique para pular a tela de build.';
+
+    btn.addEventListener('click', () => {
+      localStorage.setItem(DEV_KEY, isDevMode() ? '0' : '1');
+      location.reload();
+    });
+
+    document.body.appendChild(btn);
   }
 
   function renderHeader() {
@@ -67,8 +96,8 @@
     document.getElementById('work').innerHTML = `
       <div class="wrap">
         <div class="work-head reveal">
-          <h2>Projetos</h2>
-          <span class="work-count">${EF.projects.length}</span>
+          <h2>Projetos / Experiências</h2>
+          
         </div>
         <div class="project-list" id="project-list">
           ${EF.projects.map(p => projectRow(p)).join('')}
@@ -160,43 +189,172 @@
   }
 
   function renderAbout() {
+    const a = EF.about;
     document.getElementById('about').innerHTML = `
-      <div class="wrap about-grid">
-        <div>
-          <h2 class="reveal">Sobre</h2>
-          <p class="reveal">${EF.about.text}</p>
-          <div class="stack-tags reveal">
-            ${EF.about.stacks.map(s => `<span>${s}</span>`).join('')}
-          </div>
+      <div class="wrap about-inner">
+        <div class="about-intro reveal">
+          <span class="about-eyebrow">Sobre</span>
+          <h2 class="about-title">${a.headline}</h2>
         </div>
-        <div class="skills-grid reveal">
-          ${EF.skills.map(g => `
-            <div class="skill-card">
-              <h4>${g.name}</h4>
-              <ul>${g.items.map(it => `<li>${it}</li>`).join('')}</ul>
-            </div>
-          `).join('')}
+        <div class="about-prose reveal">
+          <blockquote class="about-pull">${a.pull}</blockquote>
+          ${a.paragraphs.map(p => `<p>${p}</p>`).join('')}
+          <p class="about-signoff">${a.signoff}</p>
         </div>
       </div>`;
   }
 
   function renderContact() {
     const c = EF.contact;
+    const channelHref = {
+      email: `mailto:${c.email}`,
+      linkedin: `https://${c.linkedin}`,
+      github: `https://${c.github}`,
+    };
+
     document.getElementById('contact').innerHTML = `
-      <div class="wrap">
-        <h2 class="reveal">Contato</h2>
-        <p class="reveal">Aberto para conversas sobre web, plataformas, dados ou infra.</p>
-        <div class="contact-links reveal">
-          <a href="mailto:${c.email}">${c.email}</a>
-          <a href="https://${c.linkedin}" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="https://${c.github}" target="_blank" rel="noopener">GitHub</a>
+      <div class="wrap contact-grid">
+        <div class="contact-info">
+          <div class="contact-head reveal">
+            <h2>Contato</h2>
+            <p class="contact-lead">${c.headline}</p>
+            <p class="contact-copy">${c.text}</p>
+          </div>
+          <div class="contact-channels">
+            ${c.channels.map(ch => `
+              <a
+                class="contact-channel reveal"
+                href="${channelHref[ch.id]}"
+                ${ch.id === 'email' ? '' : 'target="_blank" rel="noopener noreferrer"'}
+              >
+                <span class="contact-channel__arrow">→</span>
+                <div class="contact-channel__body">
+                  <span class="contact-channel__label">${ch.label}</span>
+                  <strong class="contact-channel__value">${ch.value}</strong>
+                  <span class="contact-channel__note">${ch.note}</span>
+                </div>
+                <span class="contact-channel__ext" aria-hidden="true">↗</span>
+              </a>`).join('')}
+          </div>
+        </div>
+
+        <div class="contact-form-wrap reveal">
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="contact-form__head">
+              <h3>${c.form.title}</h3>
+              <p class="contact-form__hint">${c.form.hint}</p>
+            </div>
+            <div class="contact-form__grid">
+              <label class="contact-field">
+                <span class="contact-field__key">name</span>
+                <input type="text" name="name" autocomplete="name" placeholder="Como posso te chamar?" required />
+              </label>
+              <label class="contact-field">
+                <span class="contact-field__key">email</span>
+                <input type="email" name="email" autocomplete="email" placeholder="voce@email.com" required />
+              </label>
+            </div>
+            <label class="contact-field">
+              <span class="contact-field__key">subject</span>
+              <input type="text" name="subject" placeholder="Projeto, vaga, parceria…" />
+            </label>
+            <label class="contact-field">
+              <span class="contact-field__key">message</span>
+              <textarea name="message" rows="5" placeholder="Conta um pouco do que você precisa." required></textarea>
+            </label>
+            <button type="submit" class="contact-form__submit">
+              <span class="contact-form__submit-label">Enviar mensagem</span>
+              <span class="contact-form__submit-arrow" aria-hidden="true">→</span>
+            </button>
+          </form>
         </div>
       </div>`;
+
+    bindContactForm();
+    initContactForm();
+  }
+
+  function bindContactForm() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const data = new FormData(form);
+      const name = String(data.get('name') || '').trim();
+      const from = String(data.get('email') || '').trim();
+      const subject = String(data.get('subject') || '').trim() || 'Contato pelo portfólio';
+      const message = String(data.get('message') || '').trim();
+      const submitBtn = form.querySelector('.contact-form__submit');
+      const label = form.querySelector('.contact-form__submit-label');
+
+      if (!name || !from || !message) {
+        form.reportValidity();
+        form.classList.add('is-invalid');
+        setTimeout(() => form.classList.remove('is-invalid'), 500);
+        return;
+      }
+
+      const body = `Nome: ${name}\nE-mail: ${from}\n\n${message}`;
+      const prevLabel = label?.textContent;
+
+      form.classList.add('is-sending');
+      submitBtn?.setAttribute('disabled', 'true');
+      if (label) label.textContent = 'Abrindo e-mail…';
+
+      setTimeout(() => {
+        window.location.href = `mailto:${EF.contact.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        form.classList.remove('is-sending');
+        form.classList.add('is-sent');
+        if (label) label.textContent = 'Pronto — confira seu app de e-mail';
+        submitBtn?.removeAttribute('disabled');
+        setTimeout(() => {
+          form.classList.remove('is-sent');
+          if (label && prevLabel) label.textContent = prevLabel;
+        }, 3200);
+      }, 380);
+    });
+  }
+
+  function initContactForm() {
+    const form = document.getElementById('contact-form');
+    if (!form || typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    gsap.fromTo(form.querySelectorAll('.contact-field'), {
+      opacity: 0,
+      y: 10,
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.5,
+      stagger: 0.06,
+      ease: 'power3.out',
+      scrollTrigger: {
+        trigger: form,
+        start: 'top 88%',
+        toggleActions: 'play none none none',
+      },
+    });
   }
 
   function renderFooter() {
     document.getElementById('footer').innerHTML = `
-      <div class="wrap"><p>designed & coded by Eduardo Fiorini · © ${new Date().getFullYear()}</p></div>`;
+      <div class="wrap">
+        <div class="footer-row">
+          <p class="footer-credit">designed & coded by Eduardo Fiorini · © ${new Date().getFullYear()}</p>
+          <div class="footer-mates">
+            <span class="footer-mates__label">…with apolo e frajola</span>
+            <div class="footer-pets" aria-label="Apolo e Frajola">
+              <span class="footer-pet footer-pet--apolo" title="Apolo">
+                <img src="img/apolo-64.png" alt="Apolo" width="64" height="64" loading="lazy" decoding="async">
+              </span>
+              <span class="footer-pet footer-pet--frajola" title="Frajola">
+                <img src="img/frajola-64.png" alt="Frajola" width="64" height="64" loading="lazy" decoding="async">
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>`;
   }
 
   function renderPanel() {
@@ -214,6 +372,30 @@
       clearInterval(panelShotTimer);
       panelShotTimer = null;
     }
+  }
+
+  function schedulePanelAutoAdvance(onTick, count, ms = 5000) {
+    clearShotTimer();
+    if (count > 1) {
+      panelShotTimer = setInterval(onTick, ms);
+    }
+  }
+
+  function cleanupPageVisual(container) {
+    clearShotTimer();
+    container?.querySelector('[data-project-api]')?._projectApiCleanup?.();
+    container?.querySelector('[data-tax-api]')?._taxApiCleanup?.();
+    const layout = container?.closest('.panel-layout');
+    if (layout?._aplProjectsCleanup) {
+      layout._aplProjectsCleanup();
+      layout._aplProjectsCleanup = null;
+    }
+    container?._monMockupCleanup?.();
+    container._monMockupCleanup = null;
+    container?._phMockupCleanup?.();
+    container._phMockupCleanup = null;
+    container?._plMockupCleanup?.();
+    container._plMockupCleanup = null;
   }
 
   function getProjectPages(p) {
@@ -248,6 +430,21 @@
   function panelFeatureItems(p) {
     if (p.scope?.length) return p.scope.slice(0, 4);
     return p.howItWorks.slice(0, 4);
+  }
+
+  const SPECIAL_MOCKUPS = new Set(['taxcomercial', 'aplicari-projects', 'monitor-web', 'previnityhub', 'pipeline']);
+
+  function usesProjectApi(page) {
+    if (!page || SPECIAL_MOCKUPS.has(page.mockup)) return false;
+    return page.mockup === 'projectapi' || page.mockup === 'taxapi' || !page.mockup;
+  }
+
+  function renderProjectApi(p, page) {
+    return window.ProjectApiMockup?.render(p, page) || '';
+  }
+
+  function initProjectApi(container, p, page) {
+    window.ProjectApiMockup?.init(container, p, page);
   }
 
   function renderPanelFeatures(p) {
@@ -298,6 +495,34 @@
       </div>`;
   }
 
+  function initDeviceMockup(container, dotSelector = '.hub-picker__btn') {
+    const brandEl = container.querySelector('[id$="-brand"]');
+    const shots = [...container.querySelectorAll('.hub-device__shot')];
+    const buttons = [...container.querySelectorAll(dotSelector)];
+    if (!shots.length) return;
+
+    let active = 0;
+
+    function goTo(i, animate = true) {
+      active = (i + shots.length) % shots.length;
+      shots.forEach((shot, idx) => shot.classList.toggle('is-active', idx === active));
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+      if (brandEl && shots[active]) brandEl.textContent = shots[active].dataset.brand;
+
+      if (animate) {
+        gsap.fromTo(shots[active], { opacity: 0.4, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'power3.out' });
+      }
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), shots.length);
+    }));
+    goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), shots.length);
+  }
+
   function renderHubMockup(page) {
     const screens = page.screens || [];
     return `
@@ -339,54 +564,348 @@
       </div>`;
   }
 
-  function initHubMockup(container) {
-    const viewport = container.querySelector('#hub-viewport');
-    const brandEl = container.querySelector('#hub-brand');
-    const shots = [...container.querySelectorAll('.hub-device__shot')];
-    const buttons = [...container.querySelectorAll('.hub-picker__btn')];
-    if (!viewport || !shots.length) return;
+  function renderTaxComercialMockup(p, page) {
+    const views = page.views || [];
+    const url = page.url || 'TaxResearch.Technologies';
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--crm">
+        <div class="hub-showcase hub-showcase--crm">
+          <div class="hub-showcase__glow"></div>
+          <div class="hub-showcase__stage hub-showcase__stage--wide">
+            <div class="hub-device hub-device--crm">
+              <header class="hub-device__top">
+                <div class="hub-device__brand">
+                  <span class="hub-device__logo" id="crm-brand">${views[0]?.brand || 'CRM COMERCIAL'}</span>
+                </div>
+                <span class="hub-device__url">${url}</span>
+              </header>
+              <div class="hub-device__screen hub-device__screen--crm">
+                <div class="hub-device__viewport hub-device__viewport--crm" id="crm-viewport">
+                  ${views.map((v, i) => `
+                    <div
+                      class="crm-ui-screen${i === 0 ? ' is-active' : ''}"
+                      data-index="${i}"
+                      data-brand="${v.brand}"
+                    >${window.CrmMockup?.render(v.id) || ''}</div>`).join('')}
+                  <nav class="crm-dots" id="crm-dots" aria-label="Telas do CRM Comercial">
+                    ${views.map((v, i) => `
+                      <button
+                        type="button"
+                        class="crm-dots__btn${i === 0 ? ' is-active' : ''}"
+                        data-index="${i}"
+                        aria-label="${v.label}"
+                      ></button>`).join('')}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderPrevinityHubMockup(p, page) {
+    const views = page.views || [];
+    const url = page.url || 'hub.previnity.internal';
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--ph">
+        <div class="hub-showcase hub-showcase--ph">
+          <div class="hub-showcase__glow"></div>
+          <div class="hub-showcase__stage hub-showcase__stage--wide">
+            <div class="hub-device hub-device--ph">
+              <header class="hub-device__top">
+                <div class="hub-device__brand">
+                  <span class="hub-device__logo" id="ph-brand">${views[0]?.brand || 'PREVINITY · HUB'}</span>
+                </div>
+                <span class="hub-device__url">${url}</span>
+              </header>
+              <div class="hub-device__screen hub-device__screen--ph">
+                <div class="hub-device__viewport hub-device__viewport--ph" id="ph-viewport">
+                  ${views.map((v, i) => `
+                    <div
+                      class="ph-ui-screen${i === 0 ? ' is-active' : ''}"
+                      data-index="${i}"
+                      data-brand="${v.brand}"
+                    >${window.PrevHubMockup?.render(v.id) || ''}</div>`).join('')}
+                  <nav class="ph-dots" id="ph-dots" aria-label="Telas do PrevinityHub">
+                    ${views.map((v, i) => `
+                      <button
+                        type="button"
+                        class="ph-dots__btn${i === 0 ? ' is-active' : ''}"
+                        data-index="${i}"
+                        aria-label="${v.label}"
+                      ></button>`).join('')}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function initPrevinityHubMockup(container) {
+    const brandEl = container.querySelector('#ph-brand');
+    const slides = [...container.querySelectorAll('.ph-ui-screen')];
+    const buttons = [...container.querySelectorAll('.ph-dots__btn')];
+    if (!slides.length) return;
+
+    const phAnim = window.PrevHubMockup?.init(container);
+    container._phMockupCleanup = phAnim?.cleanup;
 
     let active = 0;
 
     function goTo(i, animate = true) {
-      active = (i + shots.length) % shots.length;
-      shots.forEach((shot, idx) => shot.classList.toggle('is-active', idx === active));
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === active));
       buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
-      if (brandEl && shots[active]) brandEl.textContent = shots[active].dataset.brand;
+      if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
 
       if (animate) {
-        gsap.fromTo(shots[active], { opacity: 0.4, scale: 0.98 }, { opacity: 1, scale: 1, duration: 0.45, ease: 'power3.out' });
+        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+      }
+
+      phAnim?.syncActiveSlide();
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
+    goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+  }
+
+  function renderPipelineMockup(p, page) {
+    const views = page.views || [];
+    const url = page.url || 'pipeline.previnity.internal';
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--pl">
+        <div class="hub-showcase hub-showcase--pl">
+          <div class="hub-showcase__glow"></div>
+          <div class="hub-showcase__stage hub-showcase__stage--wide">
+            <div class="hub-device hub-device--pl">
+              <header class="hub-device__top">
+                <div class="hub-device__brand">
+                  <span class="hub-device__logo" id="pl-brand">${views[0]?.brand || 'PIPELINE · CSV'}</span>
+                </div>
+                <span class="hub-device__url">${url}</span>
+              </header>
+              <div class="hub-device__screen hub-device__screen--pl">
+                <div class="hub-device__viewport hub-device__viewport--pl" id="pl-viewport">
+                  ${views.map((v, i) => `
+                    <div
+                      class="pl-ui-screen${i === 0 ? ' is-active' : ''}"
+                      data-index="${i}"
+                      data-brand="${v.brand}"
+                    >${window.PipelineMockup?.render(v.id) || ''}</div>`).join('')}
+                  <nav class="pl-dots" id="pl-dots" aria-label="Telas do Pipeline">
+                    ${views.map((v, i) => `
+                      <button
+                        type="button"
+                        class="pl-dots__btn${i === 0 ? ' is-active' : ''}"
+                        data-index="${i}"
+                        aria-label="${v.label}"
+                      ></button>`).join('')}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function initPipelineMockup(container) {
+    const brandEl = container.querySelector('#pl-brand');
+    const slides = [...container.querySelectorAll('.pl-ui-screen')];
+    const buttons = [...container.querySelectorAll('.pl-dots__btn')];
+    if (!slides.length) return;
+
+    const plAnim = window.PipelineMockup?.init(container);
+    container._plMockupCleanup = plAnim?.cleanup;
+
+    let active = 0;
+
+    function goTo(i, animate = true) {
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === active));
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+      if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
+
+      if (animate) {
+        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+      }
+
+      plAnim?.syncActiveSlide();
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
+    goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+  }
+
+  function initHubMockup(container) {
+    initDeviceMockup(container);
+  }
+
+  function initTaxComercialMockup(container) {
+    const brandEl = container.querySelector('#crm-brand');
+    const slides = [...container.querySelectorAll('.crm-ui-screen')];
+    const buttons = [...container.querySelectorAll('.crm-dots__btn')];
+    if (!slides.length) return;
+
+    let active = 0;
+
+    function goTo(i, animate = true) {
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === active));
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+      if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
+
+      if (animate) {
+        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
       }
     }
 
-    buttons.forEach(btn => btn.addEventListener('click', () => goTo(+btn.dataset.index)));
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
     goTo(0, false);
 
-    clearShotTimer();
-    if (shots.length > 1) {
-      panelShotTimer = setInterval(() => goTo(active + 1), 5000);
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+  }
+
+  function renderMonitorWebMockup(p, page) {
+    const views = page.views || [];
+    const url = page.url || 'monitor.web';
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--mon">
+        <div class="hub-showcase hub-showcase--mon">
+          <div class="hub-showcase__glow"></div>
+          <div class="hub-showcase__stage hub-showcase__stage--wide">
+            <div class="hub-device hub-device--mon">
+              <header class="hub-device__top">
+                <div class="hub-device__brand">
+                  <span class="hub-device__logo" id="mon-brand">${views[0]?.brand || 'MONITOR-WEB'}</span>
+                </div>
+                <span class="hub-device__url">${url}</span>
+              </header>
+              <div class="hub-device__screen hub-device__screen--mon">
+                <div class="hub-device__viewport hub-device__viewport--mon" id="mon-viewport">
+                  ${views.map((v, i) => `
+                    <div
+                      class="mon-ui-screen${i === 0 ? ' is-active' : ''}"
+                      data-index="${i}"
+                      data-brand="${v.brand}"
+                    >${window.MonitorMockup?.render(v.id) || ''}</div>`).join('')}
+                  <nav class="mon-dots" id="mon-dots" aria-label="Telas do Monitor-Web">
+                    ${views.map((v, i) => `
+                      <button
+                        type="button"
+                        class="mon-dots__btn${i === 0 ? ' is-active' : ''}"
+                        data-index="${i}"
+                        aria-label="${v.label}"
+                      ></button>`).join('')}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function initMonitorWebMockup(container) {
+    const brandEl = container.querySelector('#mon-brand');
+    const slides = [...container.querySelectorAll('.mon-ui-screen')];
+    const buttons = [...container.querySelectorAll('.mon-dots__btn')];
+    if (!slides.length) return;
+
+    const monAnim = window.MonitorMockup?.init(container);
+    container._monMockupCleanup = monAnim?.cleanup;
+
+    let active = 0;
+
+    function goTo(i, animate = true) {
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === active));
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+      if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
+
+      if (animate) {
+        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+      }
+
+      monAnim?.syncActiveSlide();
     }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
+    goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
   }
 
   function renderPageVisual(p, page) {
-    if (page.mockup === 'previnityhub') return renderHubMockup(page);
-    if (isOverviewPage(page)) {
-      return `<div class="panel-visual-inner panel-visual--mock">${renderPanelMockup(p)}</div>`;
+    if (page.mockup === 'taxcomercial') return renderTaxComercialMockup(p, page);
+    if (page.mockup === 'monitor-web') return renderMonitorWebMockup(p, page);
+    if (page.mockup === 'previnityhub') return renderPrevinityHubMockup(p, page);
+    if (page.mockup === 'pipeline') return renderPipelineMockup(p, page);
+    if (page.mockup === 'aplicari-projects' && window.AplicariMockup) {
+      return AplicariMockup.render(p, page);
     }
+    if (usesProjectApi(page)) return renderProjectApi(p, page);
     const imgs = pageImages(page);
     if (imgs.length) {
       return renderHubMockup({ screens: imgs.map((src, i) => ({ src, label: `Tela ${i + 1}`, brand: page.title })) });
     }
-    return `<div class="panel-visual-inner panel-visual--mock">${renderPanelMockup(p, page.label || page.title)}</div>`;
+    return renderProjectApi(p, page);
+  }
+
+  function renderPageScope(page) {
+    if (!page.scope?.length) return '';
+    return `
+      <ul class="panel-scope">
+        ${page.scope.map(item => `
+          <li>
+            <strong>${item.title}</strong>
+            <p>${item.text}</p>
+          </li>`).join('')}
+      </ul>`;
+  }
+
+  function getPageHeader(p, page) {
+    if (isOverviewPage(page)) {
+      return {
+        name: page.label || p.title,
+        lead: p.showPanelLead !== false ? p.headline : null,
+      };
+    }
+    return {
+      name: page.title || page.label,
+      lead: page.headline || null,
+    };
   }
 
   function renderPageContent(p, page) {
     if (isOverviewPage(page)) {
       return `<p class="panel-tab-text">${p.overview}</p>`;
     }
+    if (page.mockup === 'aplicari-projects' && window.AplicariMockup) {
+      return AplicariMockup.renderContent(p, page);
+    }
     return `
-      <h3 class="panel-tab-title">${page.headline || page.title}</h3>
-      <p class="panel-tab-text">${page.text}</p>`;
+      <p class="panel-tab-text">${page.text}</p>
+      ${renderPageScope(page)}`;
   }
 
   function getMainNavLabel(p, page) {
@@ -428,7 +947,14 @@
   }
 
   function initPageVisual(container, p, page) {
-    if (page.mockup === 'previnityhub') initHubMockup(container);
+    if (page.mockup === 'taxcomercial') initTaxComercialMockup(container);
+    else if (page.mockup === 'monitor-web') initMonitorWebMockup(container);
+    else if (page.mockup === 'aplicari-projects') {
+      window.AplicariMockup?.init(container.closest('.panel-layout') || container, p, page);
+    }
+    else if (usesProjectApi(page)) initProjectApi(container, p, page);
+    else if (page.mockup === 'previnityhub') initPrevinityHubMockup(container);
+    else if (page.mockup === 'pipeline') initPipelineMockup(container);
   }
 
   function renderPanelVisual(p) {
@@ -438,7 +964,51 @@
         screens: imgs.map((src, i) => ({ src, label: `Tela ${i + 1}`, brand: p.title.toUpperCase() })),
       });
     }
-    return `<div class="panel-visual-inner panel-visual--mock">${renderPanelMockup(p)}</div>`;
+    const startPage = pages.find(pg => pg.id === 'main') || pages[0];
+    return renderProjectApi(p, startPage);
+  }
+
+  function updatePanelHeader(p, page) {
+    const header = getPageHeader(p, page);
+    const nameEl = document.querySelector('#panel .panel-name');
+    const leadEl = document.querySelector('#panel .panel-lead');
+
+    if (nameEl) nameEl.textContent = header.name;
+
+    if (leadEl) {
+      if (header.lead) {
+        leadEl.textContent = header.lead;
+        leadEl.hidden = false;
+      } else {
+        leadEl.hidden = true;
+      }
+    } else if (header.lead) {
+      nameEl?.insertAdjacentHTML('afterend', `<p class="panel-lead" id="panel-lead">${header.lead}</p>`);
+    }
+  }
+
+  function panelLayoutClass(page) {
+    if (page?.mockup === 'taxcomercial') return ' panel-layout--crm';
+    if (page?.mockup === 'monitor-web') return ' panel-layout--crm';
+    if (page?.mockup === 'previnityhub') return ' panel-layout--crm';
+    if (page?.mockup === 'pipeline') return ' panel-layout--crm';
+    if (page?.mockup === 'aplicari-projects') return ' panel-layout--apl-browser';
+    return '';
+  }
+
+  function syncPanelLayout(page) {
+    const panel = document.getElementById('panel');
+    const layout = panel?.querySelector('.panel-layout');
+    const isCrm = page?.mockup === 'taxcomercial';
+    const isMonWeb = page?.mockup === 'monitor-web';
+    const isPrevHub = page?.mockup === 'previnityhub';
+    const isPipeline = page?.mockup === 'pipeline';
+    const isAplBrowser = page?.mockup === 'aplicari-projects';
+    panel?.classList.toggle('panel--crm', isCrm);
+    panel?.classList.toggle('panel--mon-web', isMonWeb || isPrevHub || isPipeline);
+    panel?.classList.toggle('panel--apl-browser', isAplBrowser);
+    layout?.classList.toggle('panel-layout--crm', isCrm || isMonWeb || isPrevHub || isPipeline);
+    layout?.classList.toggle('panel-layout--apl-browser', isAplBrowser);
   }
 
   function switchPanelPage(pageIndex) {
@@ -450,11 +1020,15 @@
       btn.classList.toggle('is-active', +btn.dataset.page === pageIndex);
     });
 
+    updatePanelHeader(p, page);
+
     const content = document.getElementById('panel-page-content');
     const visual = document.getElementById('panel-visual');
     content.innerHTML = renderPageContent(p, page);
+    cleanupPageVisual(visual);
     visual.innerHTML = renderPageVisual(p, page);
     initPageVisual(visual, p, page);
+    syncPanelLayout(page);
 
     const flow = document.getElementById('panel-flow');
     if (flow) flow.outerHTML = renderPanelFlow(p, page);
@@ -485,6 +1059,7 @@
     panelOpenProject = p;
     const pages = getProjectPages(p);
     const startPage = 0;
+    const startHeader = getPageHeader(p, pages[startPage]);
     const panel = document.getElementById('panel');
     const bg = document.getElementById('panel-bg');
 
@@ -492,10 +1067,10 @@
       <button type="button" class="panel-close" id="panel-close" aria-label="Fechar">esc</button>
       ${renderPanelNav(p, startPage)}
       <div class="panel-scroll">
-        <div class="panel-layout" style="--accent:${p.accent}">
+        <div class="panel-layout${panelLayoutClass(pages[startPage])}" style="--accent:${p.accent}">
           <div class="panel-info">
-            <h2 class="panel-name">${pages[startPage].label || p.title}</h2>
-            ${p.showPanelLead !== false ? `<p class="panel-lead">${p.headline}</p>` : ''}
+            <h2 class="panel-name">${startHeader.name}</h2>
+            ${startHeader.lead ? `<p class="panel-lead" id="panel-lead">${startHeader.lead}</p>` : ''}
 
             <div class="panel-page-content" id="panel-page-content">
               ${renderPageContent(p, pages[startPage])}
@@ -513,6 +1088,10 @@
       btn.addEventListener('click', () => switchPanelPage(+btn.dataset.page));
     });
     initPageVisual(document.getElementById('panel-visual'), p, pages[startPage]);
+    syncPanelLayout(pages[startPage]);
+    panel.classList.toggle('panel--crm', pages[startPage].mockup === 'taxcomercial');
+    panel.classList.toggle('panel--mon-web', pages[startPage].mockup === 'monitor-web');
+    panel.classList.toggle('panel--apl-browser', pages[startPage].mockup === 'aplicari-projects');
 
     bg.classList.add('open');
     bg.setAttribute('aria-hidden', 'false');
@@ -562,6 +1141,11 @@
   let hintTimer = null;
 
   function runLoader() {
+    if (isDevMode()) {
+      finishBoot();
+      return;
+    }
+
     document.body.classList.add('loading');
     const cmdEl = document.getElementById('boot-cmd');
     const cursor = document.getElementById('boot-cursor');
@@ -647,7 +1231,7 @@
       ['<span class="log-joke">  → removendo textos genéricos de IA... nenhum encontrado 👀</span>', 280],
       ['<span class="log-ok">✓ 12 modules transformed.</span>', 100],
       ['<span class="log-fun">injetando personalidade do Eduardo...</span>', 300],
-      ['<span class="log-fun">compilando projetos reais (TaxComercial, PrevinityHub...)</span>', 280],
+      ['<span class="log-fun">compilando projetos reais (... , ...)</span>', 280],
       ['rendering chunks...', 200],
       ['<span class="log-joke">  → otimizando animações pra impressionar no LinkedIn</span>', 220],
       ['computing gzip size...', 160],
