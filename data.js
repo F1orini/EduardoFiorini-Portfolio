@@ -459,7 +459,7 @@ window.EF = {
       title: 'Infraestrutura',
       headline: 'Eletrotécnica, rede e hardware: infraestrutura de ponta a ponta.',
       status: 'Entregue',
-      year: '2024',
+      year: 'Entregue',
       brief: 'Formação em eletrotécnica, redes estruturadas, segurança e hardware, com foco em diagnóstico e infra estável.',
       overview:
         'Minha formação em eletrotécnica sustenta uma base que vai além do software: entendo elétrica, distribuição de energia, redes estruturadas, cabeamento e sistemas de segurança como partes de um mesmo quebra-cabeça. Hardware não é caixa preta para mim, sei como os componentes se relacionam, do microcomponente ao equipamento montado, e manuseio ferramentas com naturalidade para diagnosticar, instalar ou ajustar.<br><br>Quando aparece uma manutenção nova, absorvo rápido: leio o contexto, entendo o funcionamento e aplico. Na resolução de problemas, parto do sintoma até a causa, seja elétrica, rede ou hardware, sempre buscando corrigir com o mínimo de interrupção. Prefiro antecipar falha a apagar incêndio: infra boa é a que funciona de forma estável e previsível, para o time operar sem ficar refém de queda ou improviso.',
