@@ -142,7 +142,7 @@
   display: flex;
   flex-direction: column;
   font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.45;
   color: var(--ph-text);
   background: var(--ph-bg);
@@ -537,6 +537,62 @@
 .ph-chat__clip svg {
   width: 14px;
   height: 14px;
+}
+
+.ph-chat-contacts li.has-unread > span:last-child::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+  vertical-align: middle;
+}
+
+.ph-chat__thread {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ph-chat__msg {
+  max-width: 92%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ph-chat__msg--in {
+  align-self: flex-start;
+}
+
+.ph-chat__msg p {
+  margin: 0;
+  padding: 9px 11px;
+  border-radius: 12px 12px 12px 4px;
+  background: rgba(37, 99, 235, 0.16);
+  border: 1px solid rgba(56, 189, 248, 0.18);
+  font-size: 11px;
+  line-height: 1.45;
+  color: #e2e8f0;
+}
+
+.ph-chat__msg p strong {
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.ph-chat__msg time {
+  font-family: var(--mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: 9px;
+  color: #64748b;
+  padding-left: 2px;
 }
 
 .ph-chat__empty {

@@ -15,7 +15,7 @@
   display: grid;
   grid-template-columns: minmax(74px, 24%) 1fr;
   height: 100%;
-  font-size: clamp(7px, 0.82vw, 10px);
+  font-size: clamp(10px, 2.5cqmin, 14px);
   color: var(--crm-text);
   background: var(--crm-bg);
   line-height: 1.4;

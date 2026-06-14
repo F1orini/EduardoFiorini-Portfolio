@@ -56,10 +56,12 @@
   ];
 
   const CHAT_USERS = [
-    { name: 'admin', tone: 'a' },
+    { name: 'admin', tone: 'a', active: true, unread: true },
     { name: 'fabio', tone: 'f' },
-    { name: 'matheus', tone: 'm', active: true },
+    { name: 'matheus', tone: 'm' },
   ];
+
+  const ADMIN_CHAT_MSG = 'Publiquei a atualização do card <strong>Comunicados de instabilidade</strong>. Confere no hub quando puder.';
 
   function sectorPills(sectors) {
     const visible = sectors.slice(0, 1);
@@ -110,7 +112,7 @@
                 <header><span>${ICONS.users}</span> Contatos</header>
                 <ul>
                   ${CHAT_USERS.map(u => `
-                    <li class="${u.active ? 'is-active' : ''}">
+                    <li class="${u.active ? 'is-active' : ''}${u.unread ? ' has-unread' : ''}">
                       <span class="ph-avatar ph-avatar--${u.tone}">${u.name[0]}</span>
                       <span>${u.name}</span>
                     </li>`).join('')}
@@ -118,11 +120,16 @@
               </div>
               <div class="ph-chat-panel">
                 <header>
-                  <span class="ph-avatar ph-avatar--m">m</span>
-                  <strong>matheus</strong>
+                  <span class="ph-avatar ph-avatar--a">a</span>
+                  <strong>admin</strong>
                   <span class="ph-chat__close">${ICONS.close}</span>
                 </header>
-                <div class="ph-chat__empty">Nenhuma mensagem</div>
+                <div class="ph-chat__thread">
+                  <div class="ph-chat__msg ph-chat__msg--in">
+                    <p>${ADMIN_CHAT_MSG}</p>
+                    <time>16:44</time>
+                  </div>
+                </div>
                 <footer class="ph-chat__composer">
                   <span class="ph-chat__clip">${ICONS.clip}</span>
                   <span class="ph-chat__input">Digite sua mensagem…</span>

@@ -1,0 +1,11 @@
+# Rascunhos e arquivos locais
+todo
+scraps/
+*.napkin
+*.zip
+
+# Duplicatas / assets de teste
+img/gatinho/
+
+# Thumbnails de ferramentas
+.thumbnail

@@ -21,7 +21,7 @@
     1: `<span class="cm"># TaxResearch API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities\n<span class="cm"># → suporte, dev, sistemas…</span>`,
     2: `<span class="cm"># Aplicari API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/SitesELandings\n<span class="cm"># → deploy, e-commerce…</span>`,
     3: `<span class="cm"># Aplicari API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/SitesELandings\n<span class="cm"># → deploy, monitor…</span>`,
-    4: `<span class="cm"># Previnity API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/PainelDeConsultas\n<span class="cm"># → hub, pipeline, 4700+ clientes</span>`,
+    4: `<span class="cm"># Previnity API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/PainelDeConsultas\n<span class="cm"># → hub, pipeline, prev.dev…</span>`,
     6: `<span class="cm"># Infra API</span>\n<span class="fn">curl</span> -s /v1/agent/capabilities/RedeEstruturada\n<span class="cm"># → VPN, NAS, biometria</span>`,
   };
 
@@ -343,7 +343,7 @@
         <div class="footer-row">
           <p class="footer-credit">designed & coded by Eduardo Fiorini · © ${new Date().getFullYear()}</p>
           <div class="footer-mates">
-            <span class="footer-mates__label">…with apolo e frajola</span>
+            <span class="footer-mates__label">…with apolo and frajola</span>
             <div class="footer-pets" aria-label="Apolo e Frajola">
               <span class="footer-pet footer-pet--apolo" title="Apolo">
                 <img src="img/apolo-64.png" alt="Apolo" width="64" height="64" loading="lazy" decoding="async">
@@ -396,6 +396,10 @@
     container._phMockupCleanup = null;
     container?._plMockupCleanup?.();
     container._plMockupCleanup = null;
+    container?._pdMockupCleanup?.();
+    container._pdMockupCleanup = null;
+    container?._ndMockupCleanup?.();
+    container._ndMockupCleanup = null;
   }
 
   function getProjectPages(p) {
@@ -432,7 +436,7 @@
     return p.howItWorks.slice(0, 4);
   }
 
-  const SPECIAL_MOCKUPS = new Set(['taxcomercial', 'aplicari-projects', 'monitor-web', 'previnityhub', 'pipeline']);
+  const SPECIAL_MOCKUPS = new Set(['taxcomercial', 'aplicari-projects', 'monitor-web', 'previnityhub', 'pipeline', 'prevdev', 'canva-embed', 'netdist']);
 
   function usesProjectApi(page) {
     if (!page || SPECIAL_MOCKUPS.has(page.mockup)) return false;
@@ -662,7 +666,7 @@
       if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
 
       if (animate) {
-        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
       }
 
       phAnim?.syncActiveSlide();
@@ -735,7 +739,7 @@
       if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
 
       if (animate) {
-        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
       }
 
       plAnim?.syncActiveSlide();
@@ -746,6 +750,333 @@
       schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
     }));
     goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+  }
+
+  const NetDistMockup = (function () {
+    const L = {
+      modemA: { cx: 96, cy: 74, w: 82, h: 38 },
+      modemB: { cx: 384, cy: 74, w: 82, h: 38 },
+      lb: { cx: 240, cy: 120, w: 88, h: 36 },
+      core: { cx: 240, cy: 172, w: 104, h: 42 },
+      sw1: { cx: 96, cy: 234, w: 80, h: 36 },
+      sw2: { cx: 240, cy: 234, w: 80, h: 36 },
+      sw3: { cx: 384, cy: 234, w: 80, h: 36 },
+      ws1: { cx: 96, cy: 292 },
+      ws2: { cx: 240, cy: 292 },
+      ws3: { cx: 384, cy: 292 },
+      ups: { cx: 446, cy: 168, w: 44, h: 68 },
+      cloud: { cx: 240, cy: 32 },
+      busWan: 108,
+      busLan: 206,
+    };
+
+    function box(cx, cy, w, h) {
+      return {
+        cx, cy, w, h,
+        t: cy - h / 2,
+        b: cy + h / 2,
+        l: cx - w / 2,
+        r: cx + w / 2,
+      };
+    }
+
+    function modemUnit(b, label, cls) {
+      const hw = b.w / 2;
+      const hh = b.h / 2;
+      return `
+      <g class="nd-dev nd-dev--modem ${cls}" transform="translate(${b.cx}, ${b.cy})">
+        <rect class="nd-dev__body" x="${-hw}" y="${-hh}" width="${b.w}" height="${b.h}" rx="8"/>
+        <rect class="nd-dev__face" x="${-hw + 4}" y="${-hh + 4}" width="${b.w - 8}" height="${b.h - 12}" rx="3"/>
+        <path class="nd-dev__ant" d="M0 ${-hh} L0 ${-hh - 10}"/>
+        <text class="nd-dev__label nd-dev__label--in" y="-1">${label}</text>
+        <circle class="nd-dev__led nd-led-pwr" cx="-8" cy="${hh - 5}" r="1.8"/>
+        <circle class="nd-dev__led nd-led-wan" cx="4" cy="${hh - 5}" r="1.8"/>
+      </g>`;
+    }
+
+    function rackUnit(b, label, cls, ports) {
+      const hw = b.w / 2;
+      const hh = b.h / 2;
+      let portRow = '';
+      const gap = (b.w - 16) / Math.max(ports - 1, 1);
+      for (let i = 0; i < ports; i += 1) {
+        const px = -hw + 8 + i * gap;
+        const on = i % 4 === 0 ? ' nd-dev__port--on' : '';
+        portRow += `<rect class="nd-dev__port${on}" x="${px - 2}" y="${hh - 7}" width="4" height="2.5" rx="0.5"/>`;
+      }
+      return `
+      <g class="nd-dev nd-dev--rack ${cls}" transform="translate(${b.cx}, ${b.cy})">
+        <rect class="nd-dev__body" x="${-hw}" y="${-hh}" width="${b.w}" height="${b.h}" rx="5"/>
+        <rect class="nd-dev__face" x="${-hw + 3}" y="${-hh + 3}" width="${b.w - 6}" height="${b.h - 10}" rx="2"/>
+        <text class="nd-dev__label nd-dev__label--in nd-dev__label--rack" y="-3">${label}</text>
+        ${portRow}
+      </g>`;
+    }
+
+    function workstation(cx, cy, label) {
+      return `
+      <g class="nd-dev nd-dev--ws" transform="translate(${cx}, ${cy})">
+        <rect class="nd-dev__screen" x="-16" y="-18" width="32" height="22" rx="3"/>
+        <rect class="nd-dev__screen-glow" x="-13" y="-15" width="26" height="14" rx="1.5"/>
+        <text class="nd-dev__label nd-dev__label--in nd-dev__label--ws" y="-8">${label}</text>
+        <rect class="nd-dev__kb" x="-12" y="6" width="24" height="4" rx="1"/>
+      </g>`;
+    }
+
+    function upsUnit(b) {
+      const hw = b.w / 2;
+      const cellH = 16;
+      const gap = 3;
+      const stackTop = -30;
+      const cells = [0, 1, 2].map((i) => {
+        const y = stackTop + 5 + i * (cellH + gap);
+        const charge = i === 1 ? ' nd-dev__bat-cell--mid' : i === 0 ? ' nd-dev__bat-cell--low' : '';
+        return `<rect class="nd-dev__bat-cell${charge}" x="${-hw}" y="${y}" width="${hw * 2}" height="${cellH}" rx="3"/>`;
+      }).join('');
+      return `
+      <g class="nd-dev nd-dev--ups" transform="translate(${b.cx}, ${b.cy})">
+        <rect class="nd-dev__bat-cap" x="-7" y="${stackTop}" width="14" height="5" rx="2"/>
+        ${cells}
+        <rect class="nd-dev__bat-base" x="${-hw - 2}" y="${stackTop + 5 + 3 * (cellH + gap) - 2}" width="${hw * 2 + 4}" height="4" rx="1"/>
+        <text class="nd-dev__label nd-dev__label--in nd-dev__label--ups" y="4">Nobreak</text>
+      </g>`;
+    }
+
+    function wirePath(d, cls) {
+      return `<path class="nd-path ${cls || ''}" d="${d}"/>`;
+    }
+
+    function renderDiagram() {
+      const mA = box(L.modemA.cx, L.modemA.cy, L.modemA.w, L.modemA.h);
+      const mB = box(L.modemB.cx, L.modemB.cy, L.modemB.w, L.modemB.h);
+      const lb = box(L.lb.cx, L.lb.cy, L.lb.w, L.lb.h);
+      const core = box(L.core.cx, L.core.cy, L.core.w, L.core.h);
+      const s1 = box(L.sw1.cx, L.sw1.cy, L.sw1.w, L.sw1.h);
+      const s2 = box(L.sw2.cx, L.sw2.cy, L.sw2.w, L.sw2.h);
+      const s3 = box(L.sw3.cx, L.sw3.cy, L.sw3.w, L.sw3.h);
+      const ups = box(L.ups.cx, L.ups.cy, L.ups.w, L.ups.h);
+      const wsTop = L.ws1.cy - 22;
+
+      const pathA = `M${mA.cx} ${mA.b} L${mA.cx} ${L.busWan} L${lb.cx - 28} ${L.busWan} L${lb.cx - 28} ${lb.t} L${lb.cx} ${lb.t}`;
+      const pathB = `M${mB.cx} ${mB.b} L${mB.cx} ${L.busWan} L${lb.cx + 28} ${L.busWan} L${lb.cx + 28} ${lb.t} L${lb.cx} ${lb.t}`;
+      const trunk1 = `M${lb.cx} ${lb.b} L${lb.cx} ${core.t}`;
+      const trunk2 = `M${core.cx} ${core.b} L${core.cx} ${L.busLan}`;
+      const branch1 = `M${core.cx} ${L.busLan} L${s1.cx} ${L.busLan} L${s1.cx} ${s1.t}`;
+      const branch2 = `M${core.cx} ${L.busLan} L${s2.cx} ${s2.t}`;
+      const branch3 = `M${core.cx} ${L.busLan} L${s3.cx} ${L.busLan} L${s3.cx} ${s3.t}`;
+      const edge1 = `M${s1.cx} ${s1.b} L${s1.cx} ${wsTop}`;
+      const edge2 = `M${s2.cx} ${s2.b} L${s2.cx} ${wsTop}`;
+      const edge3 = `M${s3.cx} ${s3.b} L${s3.cx} ${wsTop}`;
+      const pktA = `M${mA.cx} ${mA.b} L${mA.cx} ${L.busWan} L${lb.cx - 28} ${L.busWan} L${lb.cx - 28} ${lb.t} L${lb.cx} ${lb.t} L${lb.cx} ${lb.b} L${core.cx} ${core.t} L${core.cx} ${core.b} L${core.cx} ${L.busLan} L${s1.cx} ${L.busLan} L${s1.cx} ${s1.t} L${s1.cx} ${s1.b} L${s1.cx} ${wsTop}`;
+      const pktB = `M${mB.cx} ${mB.b} L${mB.cx} ${L.busWan} L${lb.cx + 28} ${L.busWan} L${lb.cx + 28} ${lb.t} L${lb.cx} ${lb.t} L${lb.cx} ${lb.b} L${core.cx} ${core.t} L${core.cx} ${core.b} L${core.cx} ${L.busLan} L${s3.cx} ${L.busLan} L${s3.cx} ${s3.t} L${s3.cx} ${s3.b} L${s3.cx} ${wsTop}`;
+
+      return `
+      <div class="nd-ui nd-ui--illus">
+        <svg class="nd-scene" viewBox="0 0 480 340" preserveAspectRatio="xMidYMid meet" aria-label="Topologia de rede ilustrada">
+          <defs>
+            <linearGradient id="nd-body" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2a2724"/>
+              <stop offset="100%" stop-color="#141210"/>
+            </linearGradient>
+            <linearGradient id="nd-face" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#1e1c1a"/>
+              <stop offset="100%" stop-color="#111010"/>
+            </linearGradient>
+            <filter id="nd-glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="1.5" result="b"/>
+              <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+
+          <rect class="nd-scene__bg" x="8" y="8" width="464" height="324" rx="10"/>
+
+          <g class="nd-paths">
+            ${wirePath(pathA, 'nd-path--a')}
+            ${wirePath(pathB, 'nd-path--b')}
+            ${wirePath(trunk1, 'nd-path--trunk')}
+            ${wirePath(trunk2, 'nd-path--trunk')}
+            ${wirePath(branch1, 'nd-path--branch')}
+            ${wirePath(branch2, 'nd-path--branch')}
+            ${wirePath(branch3, 'nd-path--branch')}
+            ${wirePath(edge1, 'nd-path--edge')}
+            ${wirePath(edge2, 'nd-path--edge')}
+            ${wirePath(edge3, 'nd-path--edge')}
+            ${wirePath(`M${L.cloud.cx - 30} ${L.cloud.cy + 16} L${mA.cx} ${mA.t - 4}`, 'nd-path--cloud')}
+            ${wirePath(`M${L.cloud.cx + 30} ${L.cloud.cy + 16} L${mB.cx} ${mB.t - 4}`, 'nd-path--cloud')}
+          </g>
+
+          <g class="nd-power-paths">
+            ${wirePath(`M${ups.l} ${ups.cy} L${core.r + 6} ${ups.cy} L${core.r + 6} ${core.t + 6}`, 'nd-path--pwr')}
+            ${wirePath(`M${ups.l} ${ups.cy} L${ups.l} ${s3.cy} L${s3.cx} ${L.busLan}`, 'nd-path--pwr')}
+            ${wirePath(`M${ups.l} ${ups.cy} L${ups.l} ${lb.cy} L${lb.cx + lb.w / 2 + 4} ${lb.cy}`, 'nd-path--pwr')}
+          </g>
+
+          <circle class="nd-packet nd-packet--a" r="2.5">
+            <animateMotion dur="3.2s" repeatCount="indefinite" path="${pktA}"/>
+          </circle>
+          <circle class="nd-packet nd-packet--b" r="2.5">
+            <animateMotion dur="3.5s" repeatCount="indefinite" path="${pktB}"/>
+          </circle>
+
+          <g class="nd-cloud" transform="translate(${L.cloud.cx}, ${L.cloud.cy})">
+            <ellipse class="nd-cloud__halo" cx="0" cy="2" rx="44" ry="16"/>
+            <path class="nd-cloud__shape" d="M-44 6 C-44 -6 -30 -12 -20 -4 C-16 -14 -4 -16 6 -6 C18 -12 32 -2 32 10 C32 18 22 22 6 22 H-36 C-46 22 -46 14 -44 6Z"/>
+            <text class="nd-cloud__txt" y="8">Internet</text>
+          </g>
+
+          ${modemUnit(mA, 'Link A', 'nd-link-a is-live')}
+          ${modemUnit(mB, 'Link B', 'nd-link-b')}
+          ${rackUnit(lb, 'Load balance', 'nd-dev--lb', 5)}
+          ${rackUnit(core, 'Switch core', 'nd-dev--core', 6)}
+          ${rackUnit(s1, 'Switch 1', 'nd-dev--sw', 4)}
+          ${rackUnit(s2, 'Switch 2', 'nd-dev--sw', 4)}
+          ${rackUnit(s3, 'Switch 3', 'nd-dev--sw', 4)}
+          ${workstation(L.ws1.cx, L.ws1.cy, 'Postos')}
+          ${workstation(L.ws2.cx, L.ws2.cy, 'Servidores')}
+          ${workstation(L.ws3.cx, L.ws3.cy, 'Impressoras')}
+          ${upsUnit(ups)}
+        </svg>
+      </div>`;
+    }
+
+    return {
+      render: renderDiagram,
+      init(container) {
+        const root = container && container.querySelector ? container.querySelector('.nd-ui') : null;
+        if (!root) return { cleanup() {} };
+
+        const linkA = root.querySelector('.nd-link-a');
+        const linkB = root.querySelector('.nd-link-b');
+        const pathA = root.querySelector('.nd-path--a');
+        const pathB = root.querySelector('.nd-path--b');
+        const packetA = root.querySelector('.nd-packet--a');
+        const packetB = root.querySelector('.nd-packet--b');
+
+        let tick = 0;
+        const timer = setInterval(() => {
+          tick += 1;
+          const aLive = tick % 2 === 0;
+          if (linkA) linkA.classList.toggle('is-live', aLive);
+          if (linkB) linkB.classList.toggle('is-live', !aLive);
+          if (pathA) pathA.classList.toggle('is-live', aLive);
+          if (pathB) pathB.classList.toggle('is-live', !aLive);
+          if (packetA) packetA.style.opacity = aLive ? '1' : '0.25';
+          if (packetB) packetB.style.opacity = !aLive ? '1' : '0.25';
+        }, 3000);
+
+        return {
+          cleanup() {
+            clearInterval(timer);
+          },
+        };
+      },
+    };
+  })();
+
+  function renderNetDistMockup(p, page) {
+    return `
+      <div class="panel-visual-inner panel-visual--nd">
+        <div class="nd-showcase">
+          <div class="nd-showcase__frame" id="nd-mount"></div>
+        </div>
+      </div>`;
+  }
+
+  function initNetDistMockup(container) {
+    const mount = container.querySelector('#nd-mount');
+    if (mount) {
+      mount.innerHTML = NetDistMockup.render();
+    }
+    const ndAnim = NetDistMockup.init(mount || container);
+    container._ndMockupCleanup = ndAnim && ndAnim.cleanup;
+  }
+
+  function renderPrevDevMockup(p, page) {
+    const views = page.views || [];
+    const url = page.url || 'prev.dev';
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--pd">
+        <div class="hub-showcase hub-showcase--pd">
+          <div class="hub-showcase__glow"></div>
+          <div class="hub-showcase__stage hub-showcase__stage--wide">
+            <div class="hub-device hub-device--pd">
+              <header class="hub-device__top">
+                <div class="hub-device__brand">
+                  <span class="hub-device__logo" id="pd-brand">${views[0]?.brand || 'PREV · PIPELINE'}</span>
+                </div>
+                <span class="hub-device__url">${url}</span>
+              </header>
+              <div class="hub-device__screen hub-device__screen--pd">
+                <div class="hub-device__viewport hub-device__viewport--pd" id="pd-viewport">
+                  ${views.map((v, i) => `
+                    <div
+                      class="pd-ui-screen${i === 0 ? ' is-active' : ''}"
+                      data-index="${i}"
+                      data-brand="${v.brand}"
+                    >${window.PrevDevMockup?.render(v.id) || ''}</div>`).join('')}
+                  <nav class="pd-dots" id="pd-dots" aria-label="Telas do Prev .dev">
+                    ${views.map((v, i) => `
+                      <button
+                        type="button"
+                        class="pd-dots__btn${i === 0 ? ' is-active' : ''}"
+                        data-index="${i}"
+                        aria-label="${v.label}"
+                      ></button>`).join('')}
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function initPrevDevMockup(container) {
+    const brandEl = container.querySelector('#pd-brand');
+    const slides = [...container.querySelectorAll('.pd-ui-screen')];
+    const buttons = [...container.querySelectorAll('.pd-dots__btn')];
+    if (!slides.length) return;
+
+    const pdAnim = window.PrevDevMockup?.init(container);
+
+    let active = 0;
+
+    function resetSlide(slide, on) {
+      gsap.killTweensOf(slide);
+      if (!on) gsap.set(slide, { clearProps: 'opacity,transform' });
+    }
+
+    function goTo(i, animate = true) {
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => {
+        const on = idx === active;
+        resetSlide(slide, on);
+        slide.classList.toggle('is-active', on);
+      });
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+      if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
+
+      if (animate) {
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
+      } else {
+        resetSlide(slides[active], true);
+      }
+
+      pdAnim?.syncActiveSlide();
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
+    goTo(0, false);
+
+    container._pdMockupCleanup = () => {
+      slides.forEach(slide => gsap.killTweensOf(slide));
+      pdAnim?.cleanup?.();
+    };
 
     schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
   }
@@ -769,7 +1100,7 @@
       if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
 
       if (animate) {
-        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
       }
     }
 
@@ -840,7 +1171,7 @@
       if (brandEl && slides[active]) brandEl.textContent = slides[active].dataset.brand;
 
       if (animate) {
-        gsap.fromTo(slides[active], { opacity: 0.45, scale: 0.985 }, { opacity: 1, scale: 1, duration: 0.4, ease: 'power3.out' });
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
       }
 
       monAnim?.syncActiveSlide();
@@ -855,11 +1186,40 @@
     schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
   }
 
+  function renderCanvaEmbed(p, page) {
+    const embed = page.embed || {};
+    const src = embed.src || '';
+    const url = embed.url || src.replace(/\?embed$/, '');
+    const title = embed.title || page.title || 'Apresentação';
+    const author = embed.author || '';
+    return `
+      <div class="panel-visual-inner panel-visual--embed">
+        <div class="embed-showcase">
+          <div class="embed-showcase__frame">
+            <iframe
+              loading="lazy"
+              class="embed-showcase__iframe"
+              src="${src}"
+              title="${title}"
+              allowfullscreen
+              allow="fullscreen"
+            ></iframe>
+          </div>
+          <a class="embed-showcase__link" href="${url}" target="_blank" rel="noopener noreferrer">
+            ${title}${author ? ` · ${author}` : ''} ↗
+          </a>
+        </div>
+      </div>`;
+  }
+
   function renderPageVisual(p, page) {
     if (page.mockup === 'taxcomercial') return renderTaxComercialMockup(p, page);
     if (page.mockup === 'monitor-web') return renderMonitorWebMockup(p, page);
     if (page.mockup === 'previnityhub') return renderPrevinityHubMockup(p, page);
     if (page.mockup === 'pipeline') return renderPipelineMockup(p, page);
+    if (page.mockup === 'prevdev') return renderPrevDevMockup(p, page);
+    if (page.mockup === 'canva-embed') return renderCanvaEmbed(p, page);
+    if (page.mockup === 'netdist') return renderNetDistMockup(p, page);
     if (page.mockup === 'aplicari-projects' && window.AplicariMockup) {
       return AplicariMockup.render(p, page);
     }
@@ -955,6 +1315,8 @@
     else if (usesProjectApi(page)) initProjectApi(container, p, page);
     else if (page.mockup === 'previnityhub') initPrevinityHubMockup(container);
     else if (page.mockup === 'pipeline') initPipelineMockup(container);
+    else if (page.mockup === 'prevdev') initPrevDevMockup(container);
+    else if (page.mockup === 'netdist') initNetDistMockup(container);
   }
 
   function renderPanelVisual(p) {
@@ -992,6 +1354,9 @@
     if (page?.mockup === 'monitor-web') return ' panel-layout--crm';
     if (page?.mockup === 'previnityhub') return ' panel-layout--crm';
     if (page?.mockup === 'pipeline') return ' panel-layout--crm';
+    if (page?.mockup === 'prevdev') return ' panel-layout--crm';
+    if (page?.mockup === 'canva-embed') return ' panel-layout--crm';
+    if (page?.mockup === 'netdist') return ' panel-layout--crm';
     if (page?.mockup === 'aplicari-projects') return ' panel-layout--apl-browser';
     return '';
   }
@@ -1003,11 +1368,14 @@
     const isMonWeb = page?.mockup === 'monitor-web';
     const isPrevHub = page?.mockup === 'previnityhub';
     const isPipeline = page?.mockup === 'pipeline';
+    const isPrevDev = page?.mockup === 'prevdev';
+    const isCanvaEmbed = page?.mockup === 'canva-embed';
+    const isNetDist = page?.mockup === 'netdist';
     const isAplBrowser = page?.mockup === 'aplicari-projects';
     panel?.classList.toggle('panel--crm', isCrm);
-    panel?.classList.toggle('panel--mon-web', isMonWeb || isPrevHub || isPipeline);
+    panel?.classList.toggle('panel--mon-web', isMonWeb || isPrevHub || isPipeline || isPrevDev || isCanvaEmbed || isNetDist);
     panel?.classList.toggle('panel--apl-browser', isAplBrowser);
-    layout?.classList.toggle('panel-layout--crm', isCrm || isMonWeb || isPrevHub || isPipeline);
+    layout?.classList.toggle('panel-layout--crm', isCrm || isMonWeb || isPrevHub || isPipeline || isPrevDev || isCanvaEmbed || isNetDist);
     layout?.classList.toggle('panel-layout--apl-browser', isAplBrowser);
   }
 
@@ -1040,7 +1408,12 @@
     if (scroll) scroll.scrollTop = 0;
 
     gsap.from(content, { opacity: 0, y: 10, duration: 0.35, ease: 'power2.out' });
-    gsap.from(visual, { opacity: 0, x: 12, duration: 0.4, ease: 'power2.out' });
+    if (visual) {
+      gsap.killTweensOf(visual);
+      visual.style.opacity = '1';
+      visual.style.transform = 'none';
+      gsap.from(visual, { opacity: 0, x: 12, duration: 0.4, ease: 'power2.out' });
+    }
   }
 
   function renderPanelFlow(p, page) {
