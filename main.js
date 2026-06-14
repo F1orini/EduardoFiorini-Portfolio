@@ -803,8 +803,8 @@
       const gap = (b.w - 16) / Math.max(ports - 1, 1);
       for (let i = 0; i < ports; i += 1) {
         const px = -hw + 8 + i * gap;
-        const on = i % 4 === 0 ? ' nd-dev__port--on' : '';
-        portRow += `<rect class="nd-dev__port${on}" x="${px - 2}" y="${hh - 7}" width="4" height="2.5" rx="0.5"/>`;
+        const edge = i === 0 || i === ports - 1 ? ' nd-dev__port--edge' : '';
+        portRow += `<rect class="nd-dev__port${edge}" data-port="${i}" x="${px - 2}" y="${hh - 7}" width="4" height="2.5" rx="0.5"/>`;
       }
       return `
       <g class="nd-dev nd-dev--rack ${cls}" transform="translate(${b.cx}, ${b.cy})">
@@ -815,11 +815,17 @@
       </g>`;
     }
 
-    function workstation(cx, cy, label) {
+    function workstation(cx, cy, label, wsCls) {
       return `
-      <g class="nd-dev nd-dev--ws" transform="translate(${cx}, ${cy})">
+      <g class="nd-dev nd-dev--ws ${wsCls}" transform="translate(${cx}, ${cy})">
         <rect class="nd-dev__screen" x="-16" y="-18" width="32" height="22" rx="3"/>
         <rect class="nd-dev__screen-glow" x="-13" y="-15" width="26" height="14" rx="1.5"/>
+        <g class="nd-dev__screen-ui">
+          <rect x="-11" y="-13" width="22" height="2.5" rx="0.5"/>
+          <rect x="-11" y="-9" width="9" height="5.5" rx="0.5"/>
+          <rect x="2" y="-9" width="9" height="5.5" rx="0.5"/>
+          <rect x="-11" y="-2.5" width="22" height="1.5" rx="0.5"/>
+        </g>
         <text class="nd-dev__label nd-dev__label--in nd-dev__label--ws" y="-8">${label}</text>
         <rect class="nd-dev__kb" x="-12" y="6" width="24" height="4" rx="1"/>
       </g>`;
@@ -871,6 +877,7 @@
       const edge3 = `M${s3.cx} ${s3.b} L${s3.cx} ${wsTop}`;
       const pktA = `M${mA.cx} ${mA.b} L${mA.cx} ${L.busWan} L${lb.cx - 28} ${L.busWan} L${lb.cx - 28} ${lb.t} L${lb.cx} ${lb.t} L${lb.cx} ${lb.b} L${core.cx} ${core.t} L${core.cx} ${core.b} L${core.cx} ${L.busLan} L${s1.cx} ${L.busLan} L${s1.cx} ${s1.t} L${s1.cx} ${s1.b} L${s1.cx} ${wsTop}`;
       const pktB = `M${mB.cx} ${mB.b} L${mB.cx} ${L.busWan} L${lb.cx + 28} ${L.busWan} L${lb.cx + 28} ${lb.t} L${lb.cx} ${lb.t} L${lb.cx} ${lb.b} L${core.cx} ${core.t} L${core.cx} ${core.b} L${core.cx} ${L.busLan} L${s3.cx} ${L.busLan} L${s3.cx} ${s3.t} L${s3.cx} ${s3.b} L${s3.cx} ${wsTop}`;
+      const pktC = `M${mA.cx} ${mA.b} L${mA.cx} ${L.busWan} L${lb.cx - 28} ${L.busWan} L${lb.cx - 28} ${lb.t} L${lb.cx} ${lb.t} L${lb.cx} ${lb.b} L${core.cx} ${core.t} L${core.cx} ${core.b} L${core.cx} ${L.busLan} L${s2.cx} ${L.busLan} L${s2.cx} ${s2.t} L${s2.cx} ${s2.b} L${s2.cx} ${wsTop}`;
 
       return `
       <div class="nd-ui nd-ui--illus">
@@ -919,6 +926,9 @@
           <circle class="nd-packet nd-packet--b" r="2.5">
             <animateMotion dur="3.5s" repeatCount="indefinite" path="${pktB}"/>
           </circle>
+          <circle class="nd-packet nd-packet--c" r="2" opacity="0.7">
+            <animateMotion dur="3.8s" repeatCount="indefinite" begin="1.6s" path="${pktC}"/>
+          </circle>
 
           <g class="nd-cloud" transform="translate(${L.cloud.cx}, ${L.cloud.cy})">
             <ellipse class="nd-cloud__halo" cx="0" cy="2" rx="44" ry="16"/>
@@ -933,9 +943,9 @@
           ${rackUnit(s1, 'Switch 1', 'nd-dev--sw', 4)}
           ${rackUnit(s2, 'Switch 2', 'nd-dev--sw', 4)}
           ${rackUnit(s3, 'Switch 3', 'nd-dev--sw', 4)}
-          ${workstation(L.ws1.cx, L.ws1.cy, 'Postos')}
-          ${workstation(L.ws2.cx, L.ws2.cy, 'Servidores')}
-          ${workstation(L.ws3.cx, L.ws3.cy, 'Impressoras')}
+          ${workstation(L.ws1.cx, L.ws1.cy, 'Postos', 'nd-ws--postos')}
+          ${workstation(L.ws2.cx, L.ws2.cy, 'Servidores', 'nd-ws--servidores')}
+          ${workstation(L.ws3.cx, L.ws3.cy, 'Impressoras', 'nd-ws--impressoras')}
           ${upsUnit(ups)}
         </svg>
       </div>`;
@@ -953,6 +963,141 @@
         const pathB = root.querySelector('.nd-path--b');
         const packetA = root.querySelector('.nd-packet--a');
         const packetB = root.querySelector('.nd-packet--b');
+        const packetC = root.querySelector('.nd-packet--c');
+        const wsPostos = root.querySelector('.nd-ws--postos');
+        const wsServidores = root.querySelector('.nd-ws--servidores');
+        const wsImpressoras = root.querySelector('.nd-ws--impressoras');
+        const wsCleanups = [];
+
+        function hookWsPulse(packet, ws, durSec, holdMs = 1600, beginSec = 0) {
+          if (!packet || !ws) return;
+          const anim = packet.querySelector('animateMotion');
+          if (!anim) return;
+
+          const onArrive = () => {
+            ws.classList.add('is-live');
+            clearTimeout(ws._ndHold);
+            ws._ndHold = setTimeout(() => ws.classList.remove('is-live'), holdMs);
+          };
+
+          anim.addEventListener('repeatEvent', onArrive);
+          ws._ndFirst = setTimeout(onArrive, (beginSec + durSec) * 1000);
+          wsCleanups.push(() => {
+            anim.removeEventListener('repeatEvent', onArrive);
+            clearTimeout(ws._ndHold);
+            clearTimeout(ws._ndFirst);
+            ws.classList.remove('is-live');
+          });
+        }
+
+        hookWsPulse(packetA, wsPostos, 3.2);
+        hookWsPulse(packetB, wsImpressoras, 3.5);
+        hookWsPulse(packetC, wsServidores, 3.8, 1600, 1.6);
+
+        const rackLedState = Array.from(root.querySelectorAll('.nd-dev--rack')).map((rack) => {
+          const ports = Array.from(rack.querySelectorAll('.nd-dev__port'));
+          ports.forEach((port, i) => {
+            if (port.classList.contains('nd-dev__port--edge') || i === 0 || i === ports.length - 1) {
+              port.classList.add('nd-dev__port--on');
+            }
+          });
+          return {
+            ports,
+            warnPort: null,
+            warnUntil: 0,
+            warnRestoreOn: false,
+            blinkPort: null,
+            blinkUntil: 0,
+            blinkRestoreOn: false,
+            dims: [],
+          };
+        });
+
+        const isEdgePort = port => port.classList.contains('nd-dev__port--edge');
+
+        function setPortState(port, state) {
+          port.classList.remove('nd-dev__port--on', 'nd-dev__port--warn', 'nd-dev__port--blink', 'nd-dev__port--dim');
+          if (state) port.classList.add(`nd-dev__port--${state}`);
+        }
+
+        function restorePort(port, wasOn) {
+          setPortState(port, wasOn ? 'on' : null);
+        }
+
+        let ledTick = 0;
+        let middleRack = 0;
+        let middleCursor = 0;
+
+        const ledTimer = setInterval(() => {
+          const now = Date.now();
+          ledTick += 1;
+
+          rackLedState.forEach((entry) => {
+            if (entry.warnPort && now > entry.warnUntil) {
+              restorePort(entry.warnPort, entry.warnRestoreOn);
+              entry.warnPort = null;
+            }
+            entry.dims?.forEach(dim => {
+              if (now > dim.until) restorePort(dim.port, dim.restoreOn);
+            });
+            entry.dims = entry.dims?.filter(dim => now <= dim.until) || [];
+            if (entry.blinkPort && now > entry.blinkUntil) {
+              restorePort(entry.blinkPort, entry.blinkRestoreOn);
+              entry.blinkPort = null;
+            }
+          });
+
+          if (!rackLedState.length) return;
+
+          const portBusy = port => rackLedState.some(e =>
+            e.warnPort === port || e.blinkPort === port || e.dims?.some(d => d.port === port)
+          );
+
+          // Cantos: apagam juntos, ficam off por mais tempo
+          if (ledTick % 3 === 0) {
+            const entry = rackLedState[(ledTick / 3) % rackLedState.length | 0];
+            entry.ports.filter(isEdgePort).forEach(port => {
+              if (portBusy(port) || entry.warnPort === port) return;
+              const restoreOn = true;
+              setPortState(port, 'dim');
+              entry.dims = entry.dims || [];
+              entry.dims.push({ port, until: now + 1300, restoreOn });
+            });
+          }
+
+          // Meio: flash verde
+          if (ledTick % 2 === 0) {
+            for (let r = 0; r < rackLedState.length; r += 1) {
+              const entry = rackLedState[(middleRack + r) % rackLedState.length];
+              const middles = entry.ports.filter(p => !isEdgePort(p));
+              if (!middles.length) continue;
+              const port = middles[middleCursor % middles.length];
+              middleCursor += 1;
+              if (portBusy(port) || entry.warnPort === port) continue;
+              const wasOn = port.classList.contains('nd-dev__port--on');
+              entry.blinkRestoreOn = wasOn;
+              setPortState(port, 'blink');
+              entry.blinkPort = port;
+              entry.blinkUntil = now + 600;
+              middleRack = (middleRack + r + 1) % rackLedState.length;
+              break;
+            }
+          }
+
+          // Amarelo: intervalo fixo, dura mais
+          if (ledTick % 8 === 0) {
+            const entry = rackLedState[(ledTick / 2) % rackLedState.length | 0];
+            if (!entry.warnPort && entry.ports.length) {
+              const port = entry.ports[ledTick % entry.ports.length];
+              if (!portBusy(port)) {
+                entry.warnRestoreOn = port.classList.contains('nd-dev__port--on') || isEdgePort(port);
+                setPortState(port, 'warn');
+                entry.warnPort = port;
+                entry.warnUntil = now + 3200;
+              }
+            }
+          }
+        }, 1200);
 
         let tick = 0;
         const timer = setInterval(() => {
@@ -962,13 +1107,16 @@
           if (linkB) linkB.classList.toggle('is-live', !aLive);
           if (pathA) pathA.classList.toggle('is-live', aLive);
           if (pathB) pathB.classList.toggle('is-live', !aLive);
-          if (packetA) packetA.style.opacity = aLive ? '1' : '0.25';
-          if (packetB) packetB.style.opacity = !aLive ? '1' : '0.25';
+          if (packetA) packetA.style.opacity = aLive ? '1' : '0.6';
+          if (packetB) packetB.style.opacity = !aLive ? '1' : '0.6';
+          if (packetC) packetC.style.opacity = aLive ? '0.85' : '0.45';
         }, 3000);
 
         return {
           cleanup() {
             clearInterval(timer);
+            clearInterval(ledTimer);
+            wsCleanups.forEach(fn => fn());
           },
         };
       },
