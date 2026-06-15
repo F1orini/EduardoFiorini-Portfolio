@@ -142,7 +142,7 @@
   display: flex;
   flex-direction: column;
   font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 13px;
+  font-size: clamp(8px, 2.35cqmin, 13px);
   line-height: 1.45;
   color: var(--ph-text);
   background: var(--ph-bg);
@@ -1084,14 +1084,134 @@
   word-break: break-word;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 820px) {
+  .hub-showcase--ph {
+    min-height: 0;
+    height: 100%;
+    padding: 0.5rem;
+  }
+
+  .hub-device--ph {
+    min-height: 0;
+  }
+
+  .hub-device__viewport--ph {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .ph-top {
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 6px 8px;
+  }
+
+  .ph-brand__name {
+    font-size: 1.05em;
+  }
+
+  .ph-brand__badge {
+    display: none;
+  }
+
+  .ph-top__actions {
+    flex: 1 1 100%;
+    justify-content: flex-end;
+  }
+
+  .ph-search {
+    min-width: 0;
+    flex: 1;
+    font-size: 0.85em;
+    padding: 4px 8px;
+  }
+
+  .ph-hub-body {
+    padding: 6px;
+    overflow: auto;
+  }
+
+  .ph-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .ph-card {
+    min-height: 0;
+    padding: 8px 9px;
+    gap: 5px;
+  }
+
+  .ph-card__title {
+    font-size: 1em;
+  }
+
   .ph-chat-widget {
-    top: 38%;
-    width: min(360px, calc(100% - 16px));
+    position: absolute;
+    inset: auto 4px 4px 4px;
+    top: auto;
+    width: auto;
+    max-height: 58%;
+  }
+
+  .ph-chat {
+    grid-template-columns: minmax(54px, 30%) 1fr;
+    border-radius: 10px;
+  }
+
+  .ph-chat-contacts header,
+  .ph-chat__contacts header,
+  .ph-chat-contacts li,
+  .ph-chat__contacts li {
+    font-size: 0.85em;
+    padding: 5px 6px;
+  }
+
+  .ph-avatar {
+    width: 20px;
+    height: 20px;
+    font-size: 0.75em;
   }
 
   .ph-admin-grid {
     grid-template-columns: 1fr;
+    gap: 6px;
+    padding: 6px;
+    overflow-y: auto;
+  }
+
+  .ph-admin-col {
+    min-height: auto;
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .ph-admin-col h3 {
+    font-size: 0.85em;
+  }
+
+  .ph-ui--audit {
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .ph-top--audit h2 {
+    font-size: 1.15em;
+  }
+
+  .ph-audit-table {
+    font-size: 0.82em;
+  }
+
+  .ph-audit-table th,
+  .ph-audit-table td {
+    padding: 6px 7px;
+  }
+
+  .ph-dots {
+    bottom: 0.45rem;
+    padding: 0.3rem 0.55rem;
   }
 }
 

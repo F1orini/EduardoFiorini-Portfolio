@@ -225,16 +225,19 @@
 
 @media (max-width: 820px) {
   .panel-visual--tax-api {
-    padding: 1rem;
-    min-height: 420px;
+    padding: 0.5rem;
+    min-height: 0;
+    height: 100%;
   }
 
   .tax-api {
     max-width: 100%;
-    min-height: 380px;
+    width: 100%;
+    min-height: 0;
+    height: 100%;
   }
 
   .tax-api__json {
-    min-height: 10em;
+    min-height: 8em;
   }
 }

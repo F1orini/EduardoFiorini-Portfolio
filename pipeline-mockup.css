@@ -136,7 +136,7 @@
   display: flex;
   flex-direction: column;
   font-family: 'DM Sans', system-ui, sans-serif;
-  font-size: 12px;
+  font-size: clamp(8px, 2.35cqmin, 12px);
   line-height: 1.4;
   color: var(--pl-text);
   background: var(--pl-bg);
@@ -428,7 +428,72 @@
 
 .pl-term__line--dim {
   color: var(--pl-muted);
-  font-size: 9px;
+  font-size: 0.75em;
+}
+
+@media (max-width: 820px) {
+  .hub-showcase--pl {
+    min-height: 0;
+    height: 100%;
+    padding: 0.5rem;
+  }
+
+  .hub-device--pl {
+    min-height: 0;
+  }
+
+  .hub-device__viewport--pl {
+    flex: 1;
+    min-height: 0;
+    height: 100%;
+  }
+
+  .pl-ui--csv {
+    padding: 6px;
+    gap: 5px;
+  }
+
+  .pl-csv-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .pl-csv-stats {
+    justify-content: flex-start;
+  }
+
+  .pl-csv-file strong {
+    font-size: 1em;
+  }
+
+  .pl-stat {
+    font-size: 0.75em;
+    padding: 3px 6px;
+  }
+
+  .pl-csv-table {
+    font-size: 0.82em;
+  }
+
+  .pl-csv-table th,
+  .pl-csv-table td {
+    padding: 5px 6px;
+  }
+
+  .pl-ui--term {
+    padding: 6px;
+  }
+
+  .pl-term-body {
+    padding: 8px 10px;
+    font-size: 0.82em;
+  }
+
+  .pl-dots {
+    bottom: 0.45rem;
+    padding: 0.3rem 0.55rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -452,8 +452,14 @@
   }
 
   .hub-showcase--apl {
-    min-height: clamp(340px, 48vh, 480px);
-    padding: 0.65rem;
+    min-height: 0;
+    height: 100%;
+    padding: 0.5rem;
+  }
+
+  .apl-browser {
+    transform: none;
+    min-height: 0;
   }
 
   .apl-work-open {
