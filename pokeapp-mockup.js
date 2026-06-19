@@ -50,6 +50,14 @@
     { name: 'Ninetales', img: 'me1-20.png' },
     { name: 'Latios', img: 'me1-101.png' },
     { name: 'Exeggutor', img: 'me1-5.png' },
+    { name: 'Numel', img: 'me1-21.png' },
+    { name: 'Helioptile', img: 'me1-52.png' },
+    { name: 'Exeggcute', img: 'me1-4.png' },
+    { name: 'Spoink', img: 'me1-62.png' },
+    { name: 'Vulpix', img: 'me1-19.png' },
+    { name: 'Pyroar', img: 'me1-24.png' },
+    { name: 'Inteleon', img: 'me1-41.png' },
+    { name: 'Gholdengo', img: 'me1-99.png' },
   ];
 
   const SETS = [
