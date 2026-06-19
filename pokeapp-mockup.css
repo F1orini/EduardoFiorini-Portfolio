@@ -138,9 +138,16 @@
 }
 
 /* ---- Base da UI ---- */
+/* A UI é desenhada numa largura lógica fixa (--pk-dw) e escalada (--pk-scale)
+   para caber em qualquer tamanho de tela, mantendo o layout responsivo. */
 .pk-ui {
   position: absolute;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: calc(var(--pk-dw, 290) * 1px);
+  height: calc(var(--pk-dh, 618) * 1px);
+  transform: scale(var(--pk-scale, 1));
+  transform-origin: top left;
   display: flex;
   flex-direction: column;
   background: var(--pk-bg);
@@ -767,4 +774,8 @@
 @media (max-width: 820px) {
   .hub-showcase--pk { padding: 0.5rem; }
   .pk-phone { animation: none; }
+  /* dá mais altura ao celular no mobile para a UI escalada ficar legível */
+  .panel-layout--crm:has(.panel-visual--pk) {
+    grid-template-rows: minmax(0, 58vh) minmax(0, 1fr);
+  }
 }

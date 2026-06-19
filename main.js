@@ -1268,7 +1268,34 @@
     if (!slides.length) return;
 
     const pkAnim = window.PokeAppMockup?.init(container);
-    container._pkMockupCleanup = pkAnim?.cleanup;
+
+    // Escala a UI (desenhada numa largura lógica fixa) para caber no tamanho real
+    // do celular, em qualquer viewport — garante responsividade no mobile.
+    const DESIGN_W = 290;
+    const screen = container.querySelector('.pk-phone__screen');
+    let ro = null;
+    function fit() {
+      if (!screen) return;
+      const w = screen.clientWidth;
+      const h = screen.clientHeight;
+      if (!w || !h) return;
+      const scale = w / DESIGN_W;
+      screen.style.setProperty('--pk-dw', DESIGN_W);
+      screen.style.setProperty('--pk-scale', scale);
+      screen.style.setProperty('--pk-dh', h / scale);
+    }
+    if (screen && typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(fit);
+      ro.observe(screen);
+    }
+    fit();
+    window.addEventListener('resize', fit);
+
+    container._pkMockupCleanup = () => {
+      ro?.disconnect();
+      window.removeEventListener('resize', fit);
+      pkAnim?.cleanup?.();
+    };
 
     let active = 0;
 
