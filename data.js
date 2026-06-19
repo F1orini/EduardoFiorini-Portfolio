@@ -456,7 +456,7 @@ window.EF = {
     },
     {
       id: 6,
-      title: 'Infraestrutura',
+      title: 'Infraestrutura / Projetos',
       headline: 'Eletrotécnica, rede e hardware: infraestrutura de ponta a ponta.',
       status: 'Entregue',
       year: 'Entregue',
@@ -546,6 +546,43 @@ window.EF = {
             {
               title: 'Nobreak & energia',
               text: 'Nobreak no rack de rede alimentando links, core e switches em queda de luz.',
+            },
+          ],
+        },
+        {
+          id: 'pokeapp',
+          label: 'PokeApp',
+          title: 'PokeApp',
+          headline: 'App mobile para catalogar minha coleção de Pokémon TCG.',
+          text: 'A ideia surgiu de uma necessidade prática: organizar minhas cartas. A maioria dos apps do mercado é paga ou opera num modelo free limitado, então optei por construir minha própria ferramenta, sem restrições e ajustável conforme a necessidade, com novas funções sempre que for preciso.<br><br>Desenvolvido em Flutter, com um scanner que identifica o número da carta pela câmera (OCR) e busca os dados na API oficial da Pokémon, catalogando automaticamente na coleção. O maior desafio foi otimizar o reconhecimento para funcionar em tempo real, sem travamentos. Como a API só retorna o conteúdo em inglês, resolvi com uma tradução em tempo real, deixando tudo disponível em PT-BR e EN.',
+          mockup: 'pokeapp',
+          url: 'pokeapp.mobile',
+          views: [
+            { id: 'scanner', label: 'Scanner', brand: 'POKEAPP · SCANNER' },
+            { id: 'colecao', label: 'Coleção', brand: 'POKEAPP · COLEÇÃO' },
+            { id: 'detalhe', label: 'Detalhe da carta', brand: 'POKEAPP · CARTA' },
+            { id: 'sets', label: 'Sets', brand: 'POKEAPP · SETS' },
+          ],
+          scope: [
+            {
+              title: 'Scanner com OCR',
+              text: 'A câmera identifica o número da carta em tempo real e busca os dados na API oficial da Pokémon, catalogando a carta automaticamente na coleção.',
+            },
+            {
+              title: 'Tradução em tempo real',
+              text: 'A API só retorna o conteúdo em inglês, então apliquei tradução em tempo real: ataques, raridade e tipo ficam disponíveis em PT-BR e EN.',
+            },
+            {
+              title: 'Detalhe completo da carta',
+              text: 'Ataques, raridade, tipo, HP, estado de conservação (nota PSA), quantidade, foil/holo e até a data de aquisição de cada carta.',
+            },
+            {
+              title: 'Coleção visual',
+              text: 'Grade com todas as cartas que já tenho, mostrando de relance o que está catalogado em cada coleção.',
+            },
+            {
+              title: 'Progresso por set',
+              text: 'Acompanhamento de cada coleção: total catalogado, percentual completo e quanto falta para fechar cada set.',
             },
           ],
         },

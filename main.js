@@ -398,6 +398,8 @@
     container._plMockupCleanup = null;
     container?._pdMockupCleanup?.();
     container._pdMockupCleanup = null;
+    container?._pkMockupCleanup?.();
+    container._pkMockupCleanup = null;
     container?._ndMockupCleanup?.();
     container._ndMockupCleanup = null;
   }
@@ -436,7 +438,7 @@
     return p.howItWorks.slice(0, 4);
   }
 
-  const SPECIAL_MOCKUPS = new Set(['taxcomercial', 'aplicari-projects', 'monitor-web', 'previnityhub', 'pipeline', 'prevdev', 'canva-embed', 'netdist']);
+  const SPECIAL_MOCKUPS = new Set(['taxcomercial', 'aplicari-projects', 'monitor-web', 'previnityhub', 'pipeline', 'prevdev', 'pokeapp', 'canva-embed', 'netdist']);
 
   function usesProjectApi(page) {
     if (!page || SPECIAL_MOCKUPS.has(page.mockup)) return false;
@@ -1229,6 +1231,66 @@
     schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
   }
 
+  function renderPokeAppMockup(p, page) {
+    const views = page.views || [];
+    return `
+      <div class="panel-visual-inner panel-visual--hub panel-visual--pk">
+        <div class="hub-showcase hub-showcase--pk">
+          <div class="hub-showcase__glow"></div>
+          <div class="pk-stage">
+            <div class="pk-phone">
+              <span class="pk-phone__cam"></span>
+              <div class="pk-phone__screen" id="pk-viewport">
+                ${views.map((v, i) => `
+                  <div
+                    class="pk-ui-screen${i === 0 ? ' is-active' : ''}"
+                    data-index="${i}"
+                  >${window.PokeAppMockup?.render(v.id) || ''}</div>`).join('')}
+              </div>
+            </div>
+            <nav class="pk-dots" id="pk-dots" aria-label="Telas do PokeApp">
+              ${views.map((v, i) => `
+                <button
+                  type="button"
+                  class="pk-dots__btn${i === 0 ? ' is-active' : ''}"
+                  data-index="${i}"
+                  aria-label="${v.label}"
+                ></button>`).join('')}
+            </nav>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function initPokeAppMockup(container) {
+    const slides = [...container.querySelectorAll('.pk-ui-screen')];
+    const buttons = [...container.querySelectorAll('.pk-dots__btn')];
+    if (!slides.length) return;
+
+    const pkAnim = window.PokeAppMockup?.init(container);
+    container._pkMockupCleanup = pkAnim?.cleanup;
+
+    let active = 0;
+
+    function goTo(i, animate = true) {
+      active = (i + slides.length) % slides.length;
+      slides.forEach((slide, idx) => slide.classList.toggle('is-active', idx === active));
+      buttons.forEach((btn, idx) => btn.classList.toggle('is-active', idx === active));
+
+      if (animate) {
+        gsap.fromTo(slides[active], { opacity: 0.45 }, { opacity: 1, duration: 0.35, ease: 'power3.out' });
+      }
+    }
+
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      goTo(+btn.dataset.index);
+      schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+    }));
+    goTo(0, false);
+
+    schedulePanelAutoAdvance(() => goTo(active + 1), slides.length);
+  }
+
   function initHubMockup(container) {
     initDeviceMockup(container);
   }
@@ -1366,6 +1428,7 @@
     if (page.mockup === 'previnityhub') return renderPrevinityHubMockup(p, page);
     if (page.mockup === 'pipeline') return renderPipelineMockup(p, page);
     if (page.mockup === 'prevdev') return renderPrevDevMockup(p, page);
+    if (page.mockup === 'pokeapp') return renderPokeAppMockup(p, page);
     if (page.mockup === 'canva-embed') return renderCanvaEmbed(p, page);
     if (page.mockup === 'netdist') return renderNetDistMockup(p, page);
     if (page.mockup === 'aplicari-projects' && window.AplicariMockup) {
@@ -1464,6 +1527,7 @@
     else if (page.mockup === 'previnityhub') initPrevinityHubMockup(container);
     else if (page.mockup === 'pipeline') initPipelineMockup(container);
     else if (page.mockup === 'prevdev') initPrevDevMockup(container);
+    else if (page.mockup === 'pokeapp') initPokeAppMockup(container);
     else if (page.mockup === 'netdist') initNetDistMockup(container);
   }
 
@@ -1503,6 +1567,7 @@
     if (page?.mockup === 'previnityhub') return ' panel-layout--crm';
     if (page?.mockup === 'pipeline') return ' panel-layout--crm';
     if (page?.mockup === 'prevdev') return ' panel-layout--crm';
+    if (page?.mockup === 'pokeapp') return ' panel-layout--crm';
     if (page?.mockup === 'canva-embed') return ' panel-layout--crm';
     if (page?.mockup === 'netdist') return ' panel-layout--crm';
     if (page?.mockup === 'aplicari-projects') return ' panel-layout--apl-browser';
@@ -1517,13 +1582,14 @@
     const isPrevHub = page?.mockup === 'previnityhub';
     const isPipeline = page?.mockup === 'pipeline';
     const isPrevDev = page?.mockup === 'prevdev';
+    const isPokeApp = page?.mockup === 'pokeapp';
     const isCanvaEmbed = page?.mockup === 'canva-embed';
     const isNetDist = page?.mockup === 'netdist';
     const isAplBrowser = page?.mockup === 'aplicari-projects';
     panel?.classList.toggle('panel--crm', isCrm);
-    panel?.classList.toggle('panel--mon-web', isMonWeb || isPrevHub || isPipeline || isPrevDev || isCanvaEmbed || isNetDist);
+    panel?.classList.toggle('panel--mon-web', isMonWeb || isPrevHub || isPipeline || isPrevDev || isPokeApp || isCanvaEmbed || isNetDist);
     panel?.classList.toggle('panel--apl-browser', isAplBrowser);
-    layout?.classList.toggle('panel-layout--crm', isCrm || isMonWeb || isPrevHub || isPipeline || isPrevDev || isCanvaEmbed || isNetDist);
+    layout?.classList.toggle('panel-layout--crm', isCrm || isMonWeb || isPrevHub || isPipeline || isPrevDev || isPokeApp || isCanvaEmbed || isNetDist);
     layout?.classList.toggle('panel-layout--apl-browser', isAplBrowser);
   }
 
