@@ -1745,8 +1745,8 @@
   /* ── boot ── */
   const BUILD_CMD = 'npm run build';
   const BOOT_HINTS = [
-    'Enter ↵ — bora buildar isso',
-    'clique aqui, prometo que não explode',
+    'Enter ↵ — ',
+    'click here, no build no gain!',
     'spoilers: vai ficar legal',
     '3… 2… 1… (mentira, precisa do Enter)',
   ];
