@@ -1,0 +1,12 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Fiorini;Eduardo;;
+FN:Eduardo Fiorini
+TITLE:Desenvolvedor Front-end · Especialista em T.I
+EMAIL;TYPE=INTERNET:edu.fiorini.sn@gmail.com
+URL;TYPE=LinkedIn:https://www.linkedin.com/in/eduardo-fiorini
+URL;TYPE=GitHub:https://github.com/F1orini
+URL;TYPE=Portfolio:https://f1orini.github.io/EduardoFiorini-Portfolio/
+ADR;TYPE=HOME:;;Serra Negra;SP;;Brasil
+NOTE:Antes de escrever código, aprendi a pensar em fluxo. Front-end, plataformas, dados e infraestrutura na BJ Group.
+END:VCARD
