@@ -169,24 +169,54 @@
     }
     .back-link:hover { color: var(--accent); }
 
-    .monogram {
+    .pets {
       position: relative;
       z-index: 0;
-      width: 96px;
-      height: 96px;
-      margin: 28px 0 56px;
-      border-radius: 50%;
-      border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: var(--mono);
-      font-size: 28px;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--accent);
-      box-shadow: 0 0 40px rgba(34, 197, 94, 0.12);
+      gap: 10px;
+      margin: 28px 0 56px;
+      flex-shrink: 0;
+    }
+
+    .pet {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      background:
+        radial-gradient(circle at 50% 40%, #222226 0%, #0e0e11 70%);
+      border: 2px solid color-mix(in srgb, var(--accent) 50%, #27272a);
+      box-shadow:
+        0 0 0 3px var(--surface),
+        0 12px 28px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+    }
+
+    .pet::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.28);
+    }
+
+    .pet img {
+      width: 76%;
+      height: 76%;
+      object-fit: contain;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      transform: translateY(1px);
+      filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+      user-select: none;
+      pointer-events: none;
     }
 
     .name-block {
@@ -318,11 +348,17 @@
     [data-i18n][hidden] { display: none; }
 
     @media (max-height: 700px) {
-      .monogram {
-        width: 72px;
-        height: 72px;
+      .pets {
+        gap: 8px;
         margin: 22px 0 48px;
-        font-size: 22px;
+      }
+      .pet {
+        width: 70px;
+        height: 70px;
+        box-shadow:
+          0 0 0 2.5px var(--surface),
+          0 8px 20px rgba(0, 0, 0, 0.48),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
       .name-block h1 { font-size: 22px; }
       .bio { font-size: 12px; }
@@ -347,7 +383,14 @@
           <span data-i18n="pt">portfólio</span><span data-i18n="en" hidden>portfolio</span>
         </a>
 
-        <div class="monogram" aria-hidden="true">EF</div>
+        <div class="pets" role="img" aria-label="Apolo e Frajola">
+          <span class="pet pet--apolo">
+            <img src="../img/favicon-apolo.svg" alt="" width="64" height="64" decoding="async">
+          </span>
+          <span class="pet pet--frajola">
+            <img src="../img/favicon-frajola.svg" alt="" width="64" height="64" decoding="async">
+          </span>
+        </div>
 
         <div class="name-block">
           <h1>Eduardo Fiorini</h1>
